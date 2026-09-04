@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bittensor (TAO) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/28452/large/ARUsPeNQ_400x400.jpeg?1696527447" alt="Bittensor logo">
+    <div>
+      <h1 style="margin:0">Bittensor (TAO)</h1>
+      <div style="color:#8b949e">Rank #44 &middot; ID: bittensor</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$224.42</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$2,153,110,071.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$231.85</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$221.70</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+1.43%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-8.60%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [246.34822861321624, 246.59062049089593, 241.67277415837626, 239.16701153278123, 236.22089492008624, 233.00449679645567, 234.1066777661281, 234.83517123683666, 233.82493582379385, 237.0235608665838, 236.55528516419045, 235.1337958268269, 237.01885630510694, 235.685506657565, 234.75051650593522, 235.63070915107778, 236.17623342380702, 233.72874017403333, 232.64079591264735, 232.02780710954173, 232.23075751525354, 234.061077213926, 234.50227741739351, 235.20857021047115, 236.4071974103933, 238.6394211260615, 237.79893728817163, 238.09719834618912, 237.22726585056643, 237.0721317356578, 236.14531145510574, 235.19441709441878, 235.69388571518888, 236.27946860452602, 235.70776837413882, 234.89105490491824, 233.92702687145572, 234.80921005890545, 235.49026934899743, 235.4190082109448, 236.97890833014858, 238.134317060947, 237.0513492003263, 237.86741641008652, 236.65908076279928, 237.85772129548607, 237.85859276566276, 239.70376411717095, 238.0133648041709, 237.5023946023039, 236.63214732042925, 241.68149303374386, 240.24142083174814, 240.54267840897091, 238.0004070671196, 235.95145651339124, 235.710810137624, 234.11031437469038, 227.44002099308076, 228.4408803902667, 225.2612518764046, 226.17931506596565, 227.6405134570736, 227.64385007139285, 229.96542959702657, 228.75277239714174, 229.07911049101827, 229.24688212368042, 229.54409480600734, 230.49035012028125, 229.44489977755447, 228.07075403435167, 226.3823708818477, 228.86775486512252, 225.9674234559348, 227.37870998911842, 228.65814865618637, 229.67360639460767, 228.8759462622245, 229.74340203021166, 230.34120752704197, 229.7697726198889, 230.28184918065605, 231.75806110439308, 230.3701322163276, 229.7749120505092, 230.52964688474637, 229.1040851148484, 231.17121739731016, 229.3525972719551, 228.55776303389, 225.81587832239893, 225.96783810169964, 227.48541293854657, 226.8039881263631, 224.55722056378013, 226.2837429121087, 225.64314279201045, 225.8012959968862, 223.70205881735907, 222.19205862138634, 222.49516202034226, 222.5154714334615, 221.41405539850615, 220.2825839288639, 219.5788788014725, 220.09752057198875, 217.93057161622855, 216.53842537937166, 218.94712663582686, 220.11672123854635, 220.28357143614852, 221.2501935029097, 219.93930228725063, 219.00502561740953, 216.71979056970827, 216.813517949411, 216.4238523091192, 217.11862789521547, 215.9984790820054, 217.80336059717374, 217.1968739201074, 217.16124902350924, 217.10946869186628, 217.43400297764302, 217.8568052351839, 216.88135729772173, 217.7272917681395, 216.3204399162805, 215.897451914384, 217.19552935494886, 215.7585549425709, 216.39177987908636, 218.6104780177305, 218.51272690206633, 219.15667013062526, 220.4300009555677, 221.67618419522418, 222.05123783611887, 221.9405869226249, 221.20369666904637, 221.76505935923376, 222.77776797157574, 222.68839280055982, 221.19120335314096, 228.0994710534147, 230.0432484943941, 229.30769992847775, 228.67949960683043, 230.07742885732324, 229.86718331681465, 229.70444366706315, 229.40395213639562, 225.67643767298551, 225.7535136527718, 225.23297327646577, 226.6798691567597, 228.41372055874098, 228.43230506777593, 229.68693846824104, 229.00516593455438, 228.95057488911803, 228.66577207098462, 229.732421778199, 230.520386496207, 229.75744066208446, 231.28191801706976, 223.52703994951764];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Bittensor 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

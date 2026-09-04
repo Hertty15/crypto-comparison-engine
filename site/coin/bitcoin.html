@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitcoin (BTC) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400" alt="Bitcoin logo">
+    <div>
+      <h1 style="margin:0">Bitcoin (BTC)</h1>
+      <div style="color:#8b949e">Rank #1 &middot; ID: bitcoin</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$79,511.00</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,595,946,114,226.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$82,108.00</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$79,016.00</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.74%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-0.10%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [79438.06518585574, 79607.76745531596, 78370.57900691858, 77798.28323867955, 77896.96429182867, 77532.27507668122, 77528.00468786708, 77398.34418104916, 77346.05408680951, 77738.78291524075, 77820.76428719184, 77727.30394647292, 77790.60032689421, 77669.86720102842, 77512.81226451545, 77645.86029492349, 77629.1915003392, 77461.03011140913, 77634.23863196258, 77634.0205335061, 77649.82587406744, 77644.01867275102, 77583.93504642752, 77583.37579710639, 77699.90411195564, 78010.76127895089, 77856.29959887669, 78020.82329523691, 78078.6121720806, 78157.9775371948, 78176.76687159947, 78124.8062583233, 78156.64522669006, 78221.78563841502, 78225.13950818499, 78184.082081203, 78074.69310281289, 78102.99055280742, 78140.31358520618, 78098.43955847349, 78124.3509411007, 78274.40362063059, 78116.43763229004, 78068.84562281353, 78002.45447823798, 78133.05344833987, 78152.86598904736, 78735.78429730616, 78858.0653239032, 78776.41086229906, 78808.51221668017, 79316.04886350794, 79003.09297584732, 79022.03995992609, 78846.40212817515, 78587.38166673134, 78640.12513815566, 78415.92036320959, 77658.23133225394, 77910.28168235716, 77619.19490947893, 77453.7976096339, 77740.1492283802, 77612.73280724128, 77990.41768119356, 78077.85980076663, 78183.05727955054, 78465.9818304446, 78501.69227668509, 78669.88490276886, 78282.14198817499, 77902.4125035204, 77841.57927993884, 78590.3128650354, 78554.14249397103, 78623.47336005233, 78871.16683070223, 79029.07045078847, 78899.17790827646, 78848.31861249713, 78955.16797650147, 78557.79779181909, 78552.77932895812, 78630.13146043592, 78349.119390689, 78421.83031494952, 78660.94843747084, 78698.40414375108, 79133.60153164144, 78720.23655912721, 78612.90671691917, 77869.1642668092, 77891.45238039519, 78010.95910528673, 78067.53602493987, 77981.92348502502, 78045.63777896867, 78137.78899466433, 77901.28356473117, 77571.78044504458, 77246.12980665805, 77112.94064912885, 77269.91226365861, 77410.46777948707, 77174.47553625521, 77240.801579754, 77416.44110979848, 77170.39523887339, 76967.63489333939, 77275.44455077226, 77523.3387885885, 77525.92756163293, 77632.80046430147, 77561.76741171286, 77448.16293594704, 76818.96132512593, 76706.59368071826, 76632.61833148886, 76772.82018721351, 76591.45163344304, 77070.68654324919, 77019.25544923359, 77243.74217047928, 77155.47647840958, 77341.09170526761, 77336.11227500642, 77285.9454900689, 77385.59112907, 77258.17095018033, 77004.75414720885, 77297.13347191992, 77043.200415925, 77328.67603522998, 77776.26490321505, 77681.57571419993, 77735.13621215663, 77777.01387300041, 77792.64435816841, 77634.32543949968, 77810.4954472119, 77584.78971480542, 77700.31017955823, 77913.14094439356, 78635.8198277505, 78780.20188484156, 80503.98990012161, 81321.7073624723, 80958.76413522735, 81037.20517412091, 81244.43792979473, 81731.27627363407, 81468.78623999904, 81599.03754394985, 81142.27254272846, 81264.70153038795, 80984.70052847588, 80969.99953830658, 80812.35052737984, 80855.6007824934, 81055.85296434356, 80982.60774336972, 80775.9080604573, 80638.3779699146, 81129.17782120455, 81049.94245952881, 81166.63283313578, 81222.97676673981, 79438.20975066516];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Bitcoin 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ondo US Dollar Yield (USDY) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/31700/large/usdy_%281%29.png?1696530524" alt="Ondo US Dollar Yield logo">
+    <div>
+      <h1 style="margin:0">Ondo US Dollar Yield (USDY)</h1>
+      <div style="color:#8b949e">Rank #43 &middot; ID: ondo-us-dollar-yield</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$1.14</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$2,196,289,203.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$1.15</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$1.13</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-0.01%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-0.40%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [1.1403138604551202, 1.1443781144667742, 1.1444562160576406, 1.1445613255865672, 1.136691290791797, 1.1444709465608387, 1.1376821321802535, 1.1372013322819452, 1.1377119197827494, 1.1445530615528308, 1.1403593372046295, 1.1445432368726527, 1.1385736979088321, 1.1405034750032672, 1.144597246033197, 1.144608693149978, 1.1446418885074694, 1.1393345149539866, 1.1445553245905749, 1.1445885201147703, 1.1445179460560466, 1.1381930537695326, 1.1446336731472908, 1.1446313146130909, 1.1384224198065445, 1.1445601852204308, 1.1443861288530337, 1.136157891287904, 1.1444424905298758, 1.136776801179534, 1.144365311041542, 1.1442381003856978, 1.139573817070387, 1.1441663920958955, 1.1441257773615574, 1.1394334527277798, 1.1402658464735853, 1.1405670563070087, 1.1410599876962249, 1.1436842608547515, 1.1418895313350352, 1.1436582351978515, 1.1438224168633304, 1.1438192444265218, 1.1409146002690607, 1.1436823905153486, 1.1418325051580245, 1.1423765066379203, 1.1415240040746495, 1.1439786302059638, 1.1440686557634607, 1.1440686629826688, 1.1418949075970934, 1.1440588043813344, 1.1440703962629895, 1.1440588119149544, 1.14080873543613, 1.1403387595732155, 1.1441090687611164, 1.1439847626381277, 1.1440145097914816, 1.141755276167526, 1.1394798995928443, 1.144336132812784, 1.1445008752454076, 1.140662202660525, 1.144842284985723, 1.1446444991760545, 1.144712018323125, 1.1443306468132208, 1.1390848454634865, 1.1416652331308226, 1.1449576720134933, 1.1426083756620635, 1.1449211178474494, 1.1445872611297898, 1.1449732012912814, 1.1450592099515648, 1.145228043462426, 1.1420108570827046, 1.1444471629110322, 1.1446083440663135, 1.1423250287677014, 1.1433890173230126, 1.1449879143660637, 1.144398468608062, 1.1448439017194496, 1.1440931489432515, 1.144485531545683, 1.1444722958795792, 1.144937911429801, 1.1444313631391165, 1.1441022711943873, 1.1446757277909831, 1.1422889715690014, 1.1443291890855962, 1.1436525562484698, 1.1441997965891195, 1.1441415906183245, 1.1423578750366343, 1.1421886384802578, 1.1431265526999508, 1.1441270043936973, 1.1422879624810722, 1.1442557311784456, 1.1441586593141841, 1.1412047584780767, 1.140360885173044, 1.1427282668300882, 1.1440632461259082, 1.1411742110432992, 1.1440913613347676, 1.1409400484201944, 1.141692080295685, 1.1439298876127364, 1.143823715781699, 1.1440274825100607, 1.1412646280155243, 1.1438455244355823, 1.1392470443347398, 1.1407631829291098, 1.1387188760447124, 1.1413763404489519, 1.1390548383035193, 1.1443235863839971, 1.1441522337693075, 1.1423561103449509, 1.138276007444618, 1.1385953798067827, 1.1443688736055795, 1.140142386427948, 1.139822180693822, 1.1448597773273315, 1.144663978105478, 1.1404336325626871, 1.144590851174875, 1.1405055576737795, 1.144675769267907, 1.1445145129619714, 1.1389158930818846, 1.1445920472885056, 1.141519146052133, 1.1447800030439255, 1.144845375584918, 1.1448689797881082, 1.142308937426653, 1.1416637066870805, 1.1447461350231347, 1.1449860782773877, 1.144685629565451, 1.1429249598324571, 1.1445837161483234, 1.1410194881530829, 1.1446042201823836, 1.1445690170131118, 1.1447851989448787, 1.1446568790459417, 1.1446773148268512, 1.1398169437672603, 1.1446292314544435, 1.1448207323146962, 1.1425730336925732, 1.1446306873424776, 1.1411644262873992, 1.1394572814801645, 1.1423698824871447, 1.1411568544757327, 1.1446379882854543];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Ondo US Dollar Yield 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

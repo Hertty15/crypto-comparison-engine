@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHO (GHO) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/30663/large/gho-token-logo.png?1720517092" alt="GHO logo">
+    <div>
+      <h1 style="margin:0">GHO (GHO)</h1>
+      <div style="color:#8b949e">Rank #90 &middot; ID: gho</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.9991</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$698,348,791.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.01%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+0.00%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.9995072812546119, 0.999636820940274, 0.9993223324384215, 0.9991907204808684, 0.9993774454162734, 0.9990799277175801, 0.9990764054959624, 0.9993083625214172, 0.9993173636333562, 0.9991622227801558, 0.9991534672982666, 0.9992012816306557, 0.9994091999252556, 0.9993827795840543, 0.999389307394165, 0.9992593301516306, 0.9992868013887108, 0.9992627764914104, 0.999278460092374, 0.9992900539831423, 0.9992396620909377, 0.9993718360217209, 0.999409238513091, 0.9992762792218092, 0.9992624799413354, 0.9993916170295091, 0.999277372168892, 0.9992770981323463, 0.9994075180513552, 0.9994412180870422, 0.9994016779670045, 0.9993809347762275, 0.9993939244863983, 0.999423937877417, 0.9993618867440122, 0.9993576007315559, 0.9993732060106556, 0.9993335707936157, 0.9992162143577775, 0.9992100318704553, 0.9992287374855907, 0.9992080768817079, 0.9992873872043456, 0.9993517225235847, 0.9992659415744952, 0.9992112154357526, 0.9992230109550995, 0.9991770865032855, 0.9992864523116881, 0.9992703321616754, 0.9992721270593649, 0.9992316109528739, 0.9991841042559932, 0.9992247537847189, 0.999234288389576, 0.9991757679382574, 0.999158940614011, 0.9991776330128568, 0.9992573132599235, 0.9989812858122685, 0.9991237143266507, 0.9990394101961815, 0.9992059569375311, 0.9992191049381205, 0.9991444585986887, 0.9993711711703881, 0.9991643084926161, 0.9991664196493583, 0.9991775397594305, 0.9990169404510887, 0.9989390188118832, 0.9990240328169515, 0.9990014090602729, 0.9991730350604499, 0.9989584551706409, 0.9991308588362939, 0.9990726590261951, 0.9990737914625151, 0.999079404946915, 0.9990892910821856, 0.9990746390842595, 0.9990644565697817, 0.9990404717544336, 0.9989900577309485, 0.9990992977458851, 0.9991303307535474, 0.9991275985059043, 0.9991084018830836, 0.9989715677138906, 0.9989494999991844, 0.9989448730288581, 0.9989169173210232, 0.9990183470834599, 0.9988362009878858, 0.9987032033182217, 0.9986421573919839, 0.9986080937733972, 0.9986536273000015, 0.9987527049410602, 0.9988684204602859, 0.9989271355860243, 0.9987617074401676, 0.9986816037755012, 0.9986078498089264, 0.9985185119067145, 0.9985358783926727, 0.998533462827787, 0.9985113513583147, 0.9985216948411538, 0.9984923842979831, 0.9987487466814003, 0.9987740768276601, 0.9986219447773207, 0.9987361574689393, 0.9985873189790312, 0.9985252125634219, 0.9985076176473994, 0.9985111986241244, 0.9984418560635362, 0.9984417874959851, 0.9984455386712068, 0.9984203319583714, 0.998571025135742, 0.9984979102254122, 0.998595185551184, 0.9986481448170345, 0.9986232023442787, 0.9987022728238838, 0.9987453535667411, 0.998686612229433, 0.9986642336002446, 0.9986660282549408, 0.9986508548731595, 0.9988186962709196, 0.9988302101682607, 0.9988155173490968, 0.9988766762456291, 0.9988002825240422, 0.9987765812564138, 0.9986492382926154, 0.99864782587449, 0.998805980204174, 0.998779070854548, 0.9988484554760224, 0.9991064859759754, 0.9990061063445982, 0.9991042885136299, 0.9990761742371945, 0.9989445339106015, 0.9990341200601162, 0.9990627680620696, 0.9990321685217141, 0.9991914577083164, 0.9991707148506346, 0.9991178221469232, 0.998994047538947, 0.9990170511334151, 0.9989918574466696, 0.9989755603260735, 0.9989445178476071, 0.9989945302655777, 0.9989417305009008, 0.9989157574000891, 0.9989533783818267, 0.9989078323756192, 0.9990556103547249, 0.9990990214285729, 0.9990190583889017];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'GHO 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

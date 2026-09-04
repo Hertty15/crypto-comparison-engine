@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BFUSD (BFUSD) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/68227/large/bfusd.png?1755132827" alt="BFUSD logo">
+    <div>
+      <h1 style="margin:0">BFUSD (BFUSD)</h1>
+      <div style="color:#8b949e">Rank #64 &middot; ID: bfusd</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.9999</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,319,821,179.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.00%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+0.00%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [1.0001768544984315, 1.0002836952751373, 1.000229783200455, 1.0001032133689343, 1.0002072536819826, 1.0000161470472253, 1.0000355669945395, 1.0001169401922656, 1.000127741799562, 1.000122231677346, 1.000109156461142, 0.9997368513398248, 1.0000442951389183, 1.0001600235574923, 1.0000519135729078, 0.9999750469212787, 0.9999882265789214, 1.0000695084173497, 1.000091363581526, 0.9997246161873535, 0.9995719797151058, 0.9996640746958395, 0.9996010136018464, 0.9998108355684883, 1.000083509696041, 0.9997492721970697, 0.9997815277519906, 0.9995801131783136, 0.999590183343671, 0.9995818552087599, 0.9995473474016723, 0.9995484269099713, 0.999569930056165, 0.9995503057813847, 0.9995410526373786, 0.9997457653960384, 0.9995563255333524, 0.9995511407396418, 0.9995409707212984, 1.0000290504892348, 1.0000531360362803, 1.0001218993440122, 1.000019750905331, 1.0001273626647262, 0.9995983638755902, 0.9995683188326397, 0.9995646139447042, 0.9998012748591067, 0.9997797293193634, 1.0000115340122924, 0.9996998401354441, 0.9998366642543525, 0.999916350672651, 0.9998537296572266, 0.9998346574611168, 0.9999416946254053, 0.9999394896908195, 0.9999439394754303, 0.9999630238190093, 0.9998499517343389, 0.9998727992862901, 0.9999427499845022, 0.9999204971040004, 1.0000133435263856, 0.9999102663658603, 0.9996665415863603, 0.999672909409784, 0.9996394189313312, 0.9995690563731424, 0.9993670190687063, 0.9993345395722435, 0.9997548045355612, 0.9995667448104462, 0.9995166236082452, 0.9994420647233401, 0.9997345359717654, 0.9997988415270145, 0.999736050216049, 0.9998482022039644, 0.9999155538043712, 0.9997490171029517, 0.9996551907821047, 0.9996375208440786, 0.9995372426840597, 0.9995349202390236, 0.9995928422474291, 0.9995316958614453, 0.9996832386217025, 0.9996951945538992, 0.9998414740849753, 0.9998815259090861, 0.9999584572935483, 0.9998700447429283, 0.9998936476471286, 0.9999358826075652, 0.9998017175984286, 0.9997669722283298, 0.9996938144855217, 0.9996962607569597, 0.9996539457660163, 0.9997078606784132, 0.999788045558396, 0.9997322956182371, 0.9996226731896973, 0.9995516713260546, 0.9995620847066458, 0.9995735738008016, 0.9995696137543847, 0.9995672321536777, 0.9995239841486393, 0.999588690138841, 0.9996134552736223, 0.9997296644786974, 0.9996867446127607, 0.9997093953960964, 0.9996712550706017, 0.9995666780905953, 0.9996566466195463, 0.9994882885882177, 0.9994999745955954, 0.9995884717960708, 0.9995466465718833, 0.9995260684749293, 0.999532168038935, 0.9996600620083157, 0.9996278945252043, 0.9995996470313777, 0.9996646419597145, 0.9996941381030782, 0.9997457491719689, 0.9996089081879388, 0.9996396962214786, 0.9996110614522256, 0.9997108237078647, 0.9996306200840058, 0.9996796400668088, 0.9996438153230431, 0.9996143817163802, 0.9995930610085259, 0.9996816762635515, 0.999580169817581, 0.9996560729461977, 0.9996701078780992, 0.9996265803140613, 1.0000202116433057, 0.9998278058879344, 0.9999439136995298, 1.0000202989692728, 0.9999597490974519, 0.9999373876232559, 0.9999802728093755, 0.9999536749940858, 1.000048757282771, 1.0000379956656993, 0.9999576678970096, 0.9999827401138845, 1.0000033631952054, 0.9999444154841569, 0.9999322497323418, 0.9998868704090152, 0.9999044041893701, 0.9998616405755204, 0.9997990525243606, 0.9999539139501056, 0.9998016608672815, 0.9999060696877653, 0.9999775650840558, 0.9999188460250086];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'BFUSD 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

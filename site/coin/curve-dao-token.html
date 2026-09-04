@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curve DAO (CRV) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/12124/large/Curve.png?1696511967" alt="Curve DAO logo">
+    <div>
+      <h1 style="margin:0">Curve DAO (CRV)</h1>
+      <div style="color:#8b949e">Rank #99 &middot; ID: curve-dao-token</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.3603</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$559,896,811.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.38</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.35</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.89%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+13.30%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.31782359939181865, 0.3195642982106771, 0.3115464378371687, 0.30887758808115134, 0.3080941576298099, 0.3051106091750823, 0.30451947856509193, 0.30471691610882834, 0.3013314572821053, 0.30362172422062766, 0.30534120548488713, 0.30754965760381475, 0.30835933439562735, 0.3085118699474461, 0.3068579429533611, 0.3072628540592325, 0.30707348412257884, 0.30719803148846897, 0.3063790887010753, 0.3033296334079757, 0.30313268396000376, 0.3015380607074445, 0.3015768160112701, 0.30133050324105853, 0.3015717746276066, 0.30481381116477624, 0.3027982399932243, 0.3030903630197606, 0.3029405189551498, 0.30317875227914404, 0.30399646692442833, 0.3039677973178611, 0.30437943027047704, 0.3047771719067128, 0.30428867987197206, 0.30394438810601154, 0.29738820970647256, 0.3002965141711764, 0.30006484639115955, 0.2994397678517464, 0.29974423020017915, 0.30096178043107935, 0.29993721193951134, 0.29835379267271755, 0.2988376727219371, 0.29957489105232327, 0.29996699866305526, 0.30454174888546864, 0.3058191152997147, 0.3055727094395439, 0.3048777433444997, 0.30898686495091837, 0.3124076900279134, 0.30839023779400637, 0.30706429306291305, 0.30336396379099684, 0.3031193612892141, 0.29963978306754363, 0.2951428182732464, 0.3029905335169146, 0.29800409923411303, 0.29874083768148435, 0.3001839897613678, 0.2996450314025828, 0.3042658469961333, 0.3051127036949418, 0.3067854884617991, 0.3096473056120669, 0.3099323925141477, 0.3102963091267275, 0.3087331795287008, 0.3059183347407578, 0.30146539077895756, 0.3103092465320998, 0.312779392904937, 0.31213556527520625, 0.31363124668303044, 0.31625821518240455, 0.32175263786327885, 0.33498659205198567, 0.3395892027924145, 0.33826347774642435, 0.33804370640804715, 0.3410228086050795, 0.35214630869063046, 0.3513948063997913, 0.3580952575627614, 0.35772114270767935, 0.3566274102658577, 0.35108899664094767, 0.3518252373454439, 0.35087557238434175, 0.3551532274520088, 0.3553993109047657, 0.36836461034001683, 0.3604792440965545, 0.36633035380591183, 0.3611671558957552, 0.36159921661948596, 0.3685908655794455, 0.36813950223932035, 0.36792319082773495, 0.37410252659316273, 0.372476416159383, 0.36812102654489, 0.36660166904127045, 0.37104757724191134, 0.3668600801220685, 0.3691101094854034, 0.37607561017696994, 0.3840470713885086, 0.3743000136139508, 0.3797781720277239, 0.3782999693833343, 0.37710645855974384, 0.3728551984882742, 0.3674356832137229, 0.36411677245828505, 0.36065844845869194, 0.36218516582435734, 0.35735600514775406, 0.3545353958133285, 0.3564935299320969, 0.3565676949373653, 0.35957202479769196, 0.353341450302631, 0.3555125393032978, 0.3539417028852365, 0.36341805080802675, 0.35923518327834747, 0.3629308998872964, 0.3561728904797861, 0.3590920515163601, 0.3616776253043714, 0.3595242126604725, 0.36395687538596927, 0.36209834653025064, 0.3594522103182855, 0.35892368035643046, 0.3609580698551009, 0.36000521915303585, 0.36490926553691, 0.36965278433497534, 0.3639951110865469, 0.35643461046253544, 0.36607125444831967, 0.3681124686579524, 0.36658627875953037, 0.370102523268355, 0.37750892811207565, 0.37156601821383545, 0.3750437249133064, 0.37003378165717166, 0.36485052524600464, 0.36466782506220313, 0.37050401296288915, 0.36918283541229197, 0.36922069720007006, 0.36628237345865683, 0.36939899476870297, 0.3734136064981977, 0.3721961319736451, 0.3698566699112608, 0.376540252088635, 0.3747864382426709, 0.3698059110189072, 0.36845331466932435, 0.35524730617650857];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Curve DAO 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

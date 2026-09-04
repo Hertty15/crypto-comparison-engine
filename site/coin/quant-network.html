@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quant (QNT) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/3370/large/5ZOu7brX_400x400.jpg?1696504070" alt="Quant logo">
+    <div>
+      <h1 style="margin:0">Quant (QNT)</h1>
+      <div style="color:#8b949e">Rank #74 &middot; ID: quant-network</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$65.08</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$946,557,032.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$67.33</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$64.76</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.06%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+4.60%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [62.277678341688315, 62.52396656414475, 61.11873133060233, 61.06312250186213, 60.93132155831185, 60.58401280766784, 60.87248855135962, 61.04759119627333, 60.87649008231433, 61.012152928915214, 61.11660898703771, 61.08400772669501, 61.21464577458452, 61.58490816113501, 61.11067789811812, 61.4632759653202, 61.61656663725373, 61.50209989635676, 61.30906508248707, 61.065594821967885, 61.15459701990122, 61.14991581069546, 60.9646585175494, 61.08794965208263, 61.03354010004496, 61.34564660719153, 61.58854805130719, 61.44937894877915, 61.10539207544342, 61.26667102531524, 61.17486216997481, 61.068809163871684, 61.41826443343839, 61.42388351816742, 61.48784780292152, 61.37330514439714, 61.67004199861592, 61.713855768618906, 61.70619003794309, 61.539619612735066, 61.559998472261405, 61.725435661175, 61.485682825391784, 61.38283420435557, 61.61609580491256, 61.711835360196034, 61.608500420899624, 61.98458814220892, 62.07789905372969, 61.85084338273338, 61.79912290957228, 62.10093110397501, 61.78241320207771, 61.908770345076086, 61.51169248779218, 61.1809874104951, 60.997495590516685, 60.79337867803731, 60.01906559094017, 60.4616232236902, 60.10271458844162, 59.91507740650659, 60.464616342897074, 60.256184969698154, 60.8213711567075, 60.95069411659247, 61.02505046361198, 60.96573053843511, 61.048139272768466, 61.730572565985845, 61.67343428989733, 61.429764811924485, 61.18573218840679, 61.56255703917677, 61.199166666021625, 61.22160809371851, 61.62398334831287, 61.60688327493813, 61.47926039277057, 61.260962056462105, 61.18582098191702, 60.97840157097632, 61.12611328683961, 61.31897536574772, 61.364453333806026, 61.423205689378186, 61.45754640006523, 61.49158515754658, 61.612361760897045, 61.25388554576419, 61.48289729869522, 61.13222027442332, 61.452376231411975, 61.64352274498532, 61.89362089375285, 62.77160665287555, 62.71000147974361, 63.353586202577894, 63.53582682935061, 63.655917628056265, 64.12929119297209, 63.27699177972004, 63.39293016398771, 63.10212567178798, 63.65065424351517, 63.83817139799844, 63.646130383423305, 63.87565230666772, 63.53530486295978, 63.999156309314465, 64.11664746513075, 64.25546991946364, 64.85186895022414, 65.57693296712445, 64.79826667730423, 64.49521125525136, 64.46959247563855, 63.527047004397176, 63.90416807719792, 63.593814178053066, 64.32751351568675, 64.2221858724806, 64.26219942516744, 64.52732559462767, 65.58369174893473, 64.9939995964739, 64.33476802814845, 64.01792445971569, 63.89136924944553, 63.774077879183096, 64.4826166570556, 64.3730916507729, 64.28762366568274, 64.67719128321507, 64.56137009536951, 64.81603849769316, 64.5942755616702, 64.54895689730665, 64.65056852227849, 64.62747611440516, 64.65483347357218, 65.4888938050153, 65.65225926799815, 65.51856649580347, 65.04656360955609, 65.95017765812986, 66.00075703045488, 65.68091595602891, 65.35712352419887, 65.29926758891244, 65.23501235483516, 65.31822772399109, 65.49406469351497, 65.22534993967498, 65.3363226631717, 65.31015639385448, 65.45352485118984, 65.58839032432425, 65.49753912052228, 65.68052480035716, 65.3648453523994, 65.45518303503256, 65.31548741140138, 65.91504945694545, 66.2218018698928, 66.63958811877575, 66.42417794244331, 65.08486996386058];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Quant 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

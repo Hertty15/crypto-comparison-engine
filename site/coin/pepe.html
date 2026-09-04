@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pepe (PEPE) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1696528776" alt="Pepe logo">
+    <div>
+      <h1 style="margin:0">Pepe (PEPE)</h1>
+      <div style="color:#8b949e">Rank #55 &middot; ID: pepe</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.00000356</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,495,983,025.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.00</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.00</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+1.60%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-6.40%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [3.8071029655007976e-06, 3.823130784046419e-06, 3.7312450260828297e-06, 3.6966238065181377e-06, 3.6948096638329156e-06, 3.6554882681513544e-06, 3.6735919073244096e-06, 3.6676377967608907e-06, 3.6543129376002034e-06, 3.687462114820863e-06, 3.695995211345793e-06, 3.6846089659642658e-06, 3.678996729069931e-06, 3.6748202749550737e-06, 3.633578158078041e-06, 3.6497446644919108e-06, 3.6567941483575015e-06, 3.627517214567556e-06, 3.6208257461034085e-06, 3.615076136052608e-06, 3.626625670678457e-06, 3.6256962924111853e-06, 3.6256288155785494e-06, 3.614170901306766e-06, 3.6289308312120325e-06, 3.6740552624720055e-06, 3.645947634464009e-06, 3.636608669978916e-06, 3.633353153021847e-06, 3.6575082769840495e-06, 3.6550964118761257e-06, 3.6540099291872777e-06, 3.6492730451528224e-06, 3.654809226976516e-06, 3.6570044715956477e-06, 3.655864307829722e-06, 3.63302540349472e-06, 3.635512543462192e-06, 3.6341814352145754e-06, 3.6397056190447223e-06, 3.64548876156687e-06, 3.661448838296391e-06, 3.632899031227734e-06, 3.6356821874546124e-06, 3.6265018542761557e-06, 3.644668672975854e-06, 3.6409036102605943e-06, 3.6509283332549686e-06, 3.6826947296520944e-06, 3.6666173134087283e-06, 3.6770666336017584e-06, 3.7613328331108117e-06, 3.7718279437014838e-06, 3.7532467541071576e-06, 3.7090183442039236e-06, 3.670697089521336e-06, 3.655853789802242e-06, 3.609392134262625e-06, 3.4043689457936663e-06, 3.4397023757675907e-06, 3.417016091246673e-06, 3.424216479070345e-06, 3.4430686766772664e-06, 3.4333499074086096e-06, 3.4667024123570613e-06, 3.4863125907194123e-06, 3.5156545048155472e-06, 3.5408963874483544e-06, 3.5650581798075883e-06, 3.595911205450647e-06, 3.5823083183886097e-06, 3.570287296722793e-06, 3.54577156913636e-06, 3.6032080322640773e-06, 3.546828214435307e-06, 3.554214961249231e-06, 3.5770620524314816e-06, 3.587689749743205e-06, 3.5658647992866626e-06, 3.5743090819669487e-06, 3.5769268523487573e-06, 3.5656681046647328e-06, 3.5539414219205395e-06, 3.560536985302691e-06, 3.5561357861873045e-06, 3.5498713235492915e-06, 3.5599710645239965e-06, 3.527426582957662e-06, 3.5613083910362917e-06, 3.5320264794351588e-06, 3.5358284286961496e-06, 3.4691231876325645e-06, 3.4822407094180676e-06, 3.4862622868587844e-06, 3.5079805256337345e-06, 3.5049844861375325e-06, 3.525976691553474e-06, 3.5157993400063278e-06, 3.51610534978099e-06, 3.4756155004958087e-06, 3.4831096392807407e-06, 3.4983302343700287e-06, 3.482391655030599e-06, 3.483469777624836e-06, 3.459015565333348e-06, 3.4583840449349913e-06, 3.4742479886569208e-06, 3.460320932502622e-06, 3.4413086008585893e-06, 3.473363588937613e-06, 3.474694216046193e-06, 3.4734988349106295e-06, 3.463797043266984e-06, 3.4549021225886375e-06, 3.4468577654227342e-06, 3.416959070301373e-06, 3.420180345941185e-06, 3.406252955219257e-06, 3.415605903418479e-06, 3.3893810376173145e-06, 3.414604817797546e-06, 3.398561414211855e-06, 3.410367061937525e-06, 3.391077998631965e-06, 3.3936699828084544e-06, 3.4056317528419847e-06, 3.401368521059468e-06, 3.4192899772060378e-06, 3.4068008707330567e-06, 3.397203465231968e-06, 3.4311009725720206e-06, 3.4086185539404723e-06, 3.439682693200142e-06, 3.4752105821817604e-06, 3.4530623011237595e-06, 3.4599867633077074e-06, 3.453184887553614e-06, 3.451680979121442e-06, 3.4605787908683908e-06, 3.4645427918430294e-06, 3.4541548924764723e-06, 3.463984687523808e-06, 3.4863958325146444e-06, 3.503737004493142e-06, 3.495885292812946e-06, 3.748870371078689e-06, 3.855918444907019e-06, 3.831966866335985e-06, 3.8322570502818e-06, 3.8247742387804444e-06, 3.8022938363752713e-06, 3.75174897513735e-06, 3.7632093307747255e-06, 3.6679283685243113e-06, 3.713223484697834e-06, 3.665534324858867e-06, 3.6664429376518913e-06, 3.6862290226318912e-06, 3.6657783833531807e-06, 3.661461301327656e-06, 3.6332241197364534e-06, 3.6376342897669217e-06, 3.6285146999765084e-06, 3.676161839364123e-06, 3.6645271721747362e-06, 3.667831350135895e-06, 3.684569909803518e-06, 3.5362212444520404e-06];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Pepe 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aster (ASTER) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/69040/large/_ASTER.png?1757326782" alt="Aster logo">
+    <div>
+      <h1 style="margin:0">Aster (ASTER)</h1>
+      <div style="color:#8b949e">Rank #46 &middot; ID: aster-2</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.7295</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,970,442,016.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.76</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.71</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.06%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+4.00%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.7015527620197254, 0.698688189832178, 0.6859369822432125, 0.6805320828475828, 0.6880248988107838, 0.6782526312336623, 0.6929144586561129, 0.6990564900815909, 0.6970176495737176, 0.701806660448545, 0.6961409707982896, 0.6895379430910814, 0.6897803844716525, 0.6916946512234472, 0.6923729614185705, 0.6982065503396131, 0.6997403574744829, 0.6996728159761094, 0.7005937292708766, 0.6992082626322281, 0.6967740689886116, 0.698558078135351, 0.697800870625262, 0.7000022030476992, 0.7019515665650343, 0.6989594442434268, 0.6987795864254752, 0.6961038378631553, 0.6958614286827217, 0.696593768428728, 0.6986736332935874, 0.6982741818237127, 0.6990388360659926, 0.6993397458429406, 0.6988848152592666, 0.698023119256408, 0.6996637504810891, 0.6989506279445871, 0.6988768040457748, 0.6964496567162621, 0.6977468309130813, 0.6985288379114005, 0.6977207849587521, 0.694628012117048, 0.697667061729529, 0.6986453759345672, 0.7056275045146088, 0.7098130577722612, 0.7083617850502644, 0.7024065859061989, 0.6973746819990374, 0.7007173689780751, 0.7024041305411668, 0.703616044398079, 0.7041694377980913, 0.6988187316015917, 0.7012948262017353, 0.6992054086469203, 0.6819773369573376, 0.6954852375951174, 0.6916574882070053, 0.693348723380299, 0.6982401960028357, 0.6906248476873461, 0.6953378823020261, 0.6983326559821319, 0.6979348354647382, 0.6947882076228581, 0.6943691513326776, 0.695369829784557, 0.6940429334380727, 0.6930245213168831, 0.6919661684286349, 0.696575547352389, 0.6991960552859512, 0.7020792619451369, 0.7012309875992352, 0.7019577331143634, 0.7004435494150112, 0.7019706299277348, 0.7006938956770691, 0.7000584608509877, 0.7012628299614339, 0.7036831541121218, 0.7042811757115732, 0.6995285794324064, 0.7024217434253932, 0.6980946784850497, 0.7008448152001021, 0.698466272223127, 0.6984073331936353, 0.6958862986035456, 0.6981253579334101, 0.7014798383386118, 0.7052180560864714, 0.6996031083576792, 0.6981709799970199, 0.7002544587393658, 0.6952466498802244, 0.6962686671802264, 0.6971456677438745, 0.6932061794424469, 0.6920158555948854, 0.6914918704446793, 0.6897562017162367, 0.689481026559998, 0.6935903425676514, 0.6978240024989305, 0.6901379084926249, 0.6952339937234688, 0.6998789624032828, 0.7022976674181978, 0.7047840209264468, 0.7071244428965227, 0.706957810712767, 0.7032426971066305, 0.6983076337550624, 0.6991388757088518, 0.7002120028779932, 0.7022096321467599, 0.7138005286891014, 0.7358571454173817, 0.7287228048997321, 0.7301758732367485, 0.726254848300837, 0.7313762812682916, 0.7317192001027606, 0.7371684302957435, 0.7351413981057842, 0.724658187632614, 0.7246219323630253, 0.7241386593993565, 0.7233335917188279, 0.7237559339665762, 0.7155320099168074, 0.7227938028967336, 0.7252429171168466, 0.7250785331399459, 0.7190958284245311, 0.7245312610024467, 0.7250034245526435, 0.7281213675562874, 0.7350915038359791, 0.7350684868880218, 0.7279166520569268, 0.7305051342332118, 0.7378016026994283, 0.7325341200375177, 0.7342253352629601, 0.7255667101288152, 0.7299712362375823, 0.7272862855810339, 0.7160651169696705, 0.7173694168606165, 0.7221429625348998, 0.7135603241576227, 0.7153703578930509, 0.7212645787810142, 0.7187320323557828, 0.7204558812460847, 0.7182424805861763, 0.7191399748679181, 0.7229660345789742, 0.7378738534304969, 0.7498958821881851, 0.7486511364715868, 0.7550483234388244, 0.7250066098338026];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Aster 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

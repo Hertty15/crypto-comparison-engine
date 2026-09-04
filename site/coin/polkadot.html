@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polkadot (DOT) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/12171/large/polkadot.jpg?1766533446" alt="Polkadot logo">
+    <div>
+      <h1 style="margin:0">Polkadot (DOT)</h1>
+      <div style="color:#8b949e">Rank #58 &middot; ID: polkadot</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.8587</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,460,468,061.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.90</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.85</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-1.55%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-1.00%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.869198344268592, 0.8772518847187278, 0.8569945715955823, 0.8526345732615602, 0.8497080318692632, 0.8420672032587059, 0.8453044871456903, 0.8455096217467082, 0.8404478515395816, 0.8478260253072641, 0.8486932705112726, 0.8494720928904721, 0.8457300302163079, 0.8438958715523113, 0.8408445046701646, 0.8434355387046241, 0.8444520316323003, 0.8388019397731464, 0.8391879869098898, 0.8376074903406774, 0.8381348647953223, 0.8397592272008607, 0.8405593783180865, 0.8358231933583181, 0.8390953280471601, 0.8466153441935899, 0.8403813271016076, 0.837744394698993, 0.8381528588762768, 0.8403742292977898, 0.8433282538697676, 0.8428654213577361, 0.8452114080356221, 0.8475887231616711, 0.8454716996364715, 0.8397394864578566, 0.8348177305602815, 0.8370128761421517, 0.8376619224414428, 0.8367632406100114, 0.8425820770384619, 0.8453815376912092, 0.8424548603154077, 0.8413083254566925, 0.84443723587698, 0.8493536423617147, 0.8529951812301706, 0.8572411221335089, 0.866489515805709, 0.8559245339030048, 0.8518310211148575, 0.8625431346901417, 0.8601739572521264, 0.8646222625333776, 0.8606163597551849, 0.8513662235206789, 0.8514303321014836, 0.8443835198001546, 0.8194698348247896, 0.8229231315374115, 0.8170120727456573, 0.8143271047026833, 0.8213259622956085, 0.820347075383263, 0.8305090147165614, 0.8279739434570048, 0.8312452873586654, 0.8285721177095242, 0.8317411968148424, 0.831808713574633, 0.8264181674792384, 0.8248603362027002, 0.8224051561807717, 0.8306741324192052, 0.824330502991891, 0.8264197986953639, 0.8374873956661525, 0.8384372394357679, 0.8363614103275796, 0.8334333488055297, 0.8410366767708893, 0.8371448536745797, 0.839708073786757, 0.8483126724055547, 0.8487458622887225, 0.8519028642773505, 0.858368260973884, 0.8514775881623398, 0.8542230025643154, 0.8702571971266622, 0.8693981019584767, 0.8552249049244214, 0.8542771012201059, 0.8633638294313546, 0.8691645157490988, 0.8589767860480164, 0.86275896948508, 0.8684303210657118, 0.8685136288310895, 0.8646140885255219, 0.8744986757168655, 0.8661875816342458, 0.8743444683750281, 0.8652023461942354, 0.8650876132542076, 0.8626002415537896, 0.8716644433458661, 0.8665039266370957, 0.8654342939382931, 0.8757666721969194, 0.8869842695901266, 0.8923670425803527, 0.8748252646736089, 0.8600238206305171, 0.8628566585475845, 0.85602576659973, 0.8500538237580402, 0.8433837473869529, 0.8443438107219797, 0.8393240350820943, 0.8502208435368812, 0.8457881140943909, 0.8502690581012232, 0.8527152569901522, 0.8551140198976989, 0.8595748252347981, 0.8606894226617233, 0.8616426130333973, 0.8622618319786018, 0.8602958232703164, 0.8671502850133361, 0.8591202715296458, 0.8712534230814308, 0.8834275156435443, 0.8728453273660293, 0.8786422005225571, 0.8786201229459546, 0.875131560603054, 0.8749844825630991, 0.8774333526024427, 0.874953836036831, 0.8770261742017891, 0.8771172881930162, 0.8805442914317955, 0.8691389378162532, 0.8908560224721268, 0.8932432894815188, 0.8890671827665021, 0.8883885795123126, 0.8946465990310051, 0.8958352667460951, 0.8970575110756055, 0.8959904159942126, 0.8876383242949256, 0.8884313807320097, 0.8867598673851428, 0.8806387516260705, 0.8799768147026902, 0.8767077271194657, 0.8739672687602719, 0.8693123682130225, 0.8717546915400932, 0.8728465490801753, 0.8807951374140459, 0.8760683542945216, 0.878538311543685, 0.880063552691391, 0.8504414925352705];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Polkadot 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

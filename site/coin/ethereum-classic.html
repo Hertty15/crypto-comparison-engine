@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethereum Classic (ETC) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/453/large/ethereum-classic-logo.png?1696501717" alt="Ethereum Classic logo">
+    <div>
+      <h1 style="margin:0">Ethereum Classic (ETC)</h1>
+      <div style="color:#8b949e">Rank #69 &middot; ID: ethereum-classic</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$7.41</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,170,629,540.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$7.70</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$7.36</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.22%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-3.40%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [7.69005595321714, 7.713405333660243, 7.559526131205611, 7.485754379169217, 7.502299518235753, 7.469531359398195, 7.4935799657594115, 7.509218294001407, 7.451254782621347, 7.513766652944526, 7.511266344140202, 7.5253156080010575, 7.527436400637831, 7.494963653419156, 7.496791823473938, 7.526838402456007, 7.548162445583626, 7.498026102082206, 7.495980338079451, 7.472952837487595, 7.476365594649502, 7.480199687473136, 7.460517123350411, 7.501358734691471, 7.498099227274584, 7.553523652307996, 7.542676988109032, 7.563727031531698, 7.522804584766647, 7.538115994867588, 7.527446727737839, 7.5258650268299165, 7.527778172338566, 7.525856869755212, 7.525887004317602, 7.4872861496969385, 7.469611232292563, 7.470162161020358, 7.457717057809754, 7.432391625505216, 7.444669241808903, 7.455024925785857, 7.407839678421869, 7.391354159739732, 7.3909195356191715, 7.406344556115914, 7.414969290525149, 7.463793996044279, 7.4649047537695505, 7.44616992797224, 7.438045330386501, 7.5143452807806765, 7.4721811112998875, 7.505053864937334, 7.444627462083292, 7.362255073979643, 7.382263390514445, 7.3317782602712, 7.183531458168674, 7.230760723836791, 7.158010698447772, 7.139917515788779, 7.185590813914285, 7.185187371037261, 7.228816889124967, 7.224446306495117, 7.229328096537523, 7.2192834404664925, 7.236964910678679, 7.267162317829243, 7.24688968722269, 7.251464134396473, 7.208634622341367, 7.291703524136334, 7.272413161648049, 7.291486389851009, 7.337278694040703, 7.3014691687577855, 7.29235780618306, 7.288868877817159, 7.308887094649598, 7.297052529652772, 7.28249776560833, 7.328476992056206, 7.301958051701034, 7.286507945149929, 7.299137195335732, 7.302186764410931, 7.383714702843178, 7.354748452159376, 7.349685921274087, 7.243391054677416, 7.2603300775443635, 7.30515677648311, 7.3227938029011295, 7.245618948730055, 7.282890869910122, 7.294020780882641, 7.2901243324118505, 7.239941443299447, 7.272290746648469, 7.281423293759809, 7.288108845887195, 7.263300390827609, 7.231630869857884, 7.201586420440006, 7.242594720845211, 7.19025957334439, 7.149674312925951, 7.233977444140817, 7.250105156947017, 7.285438356485343, 7.30098755097727, 7.289629892643579, 7.284853799232409, 7.244406984590886, 7.210177643768748, 7.188065374978156, 7.2181173041212325, 7.20864297960743, 7.2437449690721, 7.217804805173386, 7.238725159374409, 7.205457681346464, 7.2300787164632565, 7.247106017678926, 7.209071683791135, 7.247630670587397, 7.251782543835336, 7.2467121854788825, 7.274956453024511, 7.251626002201862, 7.30087554327402, 7.383827749918761, 7.354858192336407, 7.365607738368234, 7.3532940494437184, 7.350388185152807, 7.350799515639554, 7.3890984443057635, 7.361692040872124, 7.382324601846654, 7.409954816496636, 7.450818285837491, 7.384542942307812, 7.6033408129341495, 7.682325501917954, 7.639732461565436, 7.630931439706806, 7.625636049091428, 7.63456666747218, 7.63208697566378, 7.644921497032799, 7.562171468652011, 7.592490732369242, 7.5566506588399465, 7.564636097844173, 7.544066627581379, 7.533880293841966, 7.592200383696513, 7.567571030893287, 7.559551758348643, 7.580029971822454, 7.677757451645188, 7.66557629799713, 7.645731094042531, 7.6542182479204275, 7.385893215019484];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Ethereum Classic 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

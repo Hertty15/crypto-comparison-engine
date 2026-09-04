@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaspa (KAS) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/25751/large/kaspa-icon-exchanges.png?1696524837" alt="Kaspa logo">
+    <div>
+      <h1 style="margin:0">Kaspa (KAS)</h1>
+      <div style="color:#8b949e">Rank #84 &middot; ID: kaspa</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.0295</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$815,382,026.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.03</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.03</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+0.47%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+1.40%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.029122557274365645, 0.02912551533506477, 0.028422863531741623, 0.028121885498649135, 0.02801156568600753, 0.027862315225146844, 0.02808091313087335, 0.02806237438775622, 0.02774810669464122, 0.02801668601076733, 0.02804448172966674, 0.02795065621768525, 0.02780204347159457, 0.02783402105195877, 0.027797274857287845, 0.02791019023000057, 0.02801635240869898, 0.027706342795291813, 0.02775102374321801, 0.02775779149994339, 0.02775288296768089, 0.02767491616308873, 0.027581482560063826, 0.027678802703619748, 0.02767845728462635, 0.02792682225808096, 0.02777838590114037, 0.02773277323769338, 0.027625156193680337, 0.027777856386221763, 0.027812359846000587, 0.02770041651990452, 0.027640981243964483, 0.027636563592431784, 0.027672300978555393, 0.02757954993752189, 0.027481227774705585, 0.02752801761553067, 0.02759083259022562, 0.027564068544978886, 0.027661037460493473, 0.02790164006273324, 0.02783711840121848, 0.027750068976887983, 0.027751037594939736, 0.027789391952570748, 0.02775005523205794, 0.027982777986734757, 0.02862611222106529, 0.028041984004124592, 0.02794958267730194, 0.028327216783689893, 0.02813491913586445, 0.02822756254054042, 0.028279449439900302, 0.028148798788772213, 0.027865068072849962, 0.027612752563286443, 0.027064601688398235, 0.027161009313785615, 0.026987785093872833, 0.02700547758371096, 0.02721259589817454, 0.02723182267211436, 0.027391147001748575, 0.02735127132474184, 0.027473114402523518, 0.027333487003234905, 0.02740966123231691, 0.027566743640358514, 0.027359983181389814, 0.027077995847525915, 0.02699038092796612, 0.027128939865174072, 0.027075710120729988, 0.027328328924748665, 0.027462453211030954, 0.02758163358771507, 0.02753937063817269, 0.02759363924377152, 0.028082038220902345, 0.027836952219621246, 0.027871990291035213, 0.028226353297419213, 0.02791543981804142, 0.02800144642843145, 0.02801150325176864, 0.027934677852595128, 0.027998777599717202, 0.02780492616891313, 0.02778778540053368, 0.027568028095825096, 0.027572231393197342, 0.027631347638949314, 0.02768267124552389, 0.027328504607599488, 0.027396450418742852, 0.02728264970976442, 0.027333409538411724, 0.027166704772321686, 0.027225025021259557, 0.02739641966768348, 0.02730862659898117, 0.027348540743803558, 0.02720173179204626, 0.02730483204217786, 0.027472143510685252, 0.02736330187394294, 0.02736900097613335, 0.027503984240016904, 0.027534141288028325, 0.02744148240449448, 0.02782416635756058, 0.027917284147400453, 0.027764958085207226, 0.027615492815428615, 0.0275646194295669, 0.027287704858928542, 0.027392297804200504, 0.027196363148673273, 0.02740171938772318, 0.02739560088879599, 0.027515515253902886, 0.027384013795406052, 0.02745378384381745, 0.027739480313486695, 0.02772777639873287, 0.02774275591544554, 0.027629638212323008, 0.027628332539290996, 0.027923376965178628, 0.02799606363436893, 0.028467789316557864, 0.02864598391326232, 0.028815431500699536, 0.0287276388833284, 0.028658535321813988, 0.028526744482414865, 0.028654628973543865, 0.028716275032719413, 0.028729688431393747, 0.029049654190433694, 0.02901599845356131, 0.0293687458226913, 0.029377659388832342, 0.02925693234066141, 0.02974700145854314, 0.029623809418403514, 0.029717916195625194, 0.029613709663132707, 0.029656402364016798, 0.02986564333313336, 0.029708301221313124, 0.029532600983484838, 0.029790268478070155, 0.02995611100532987, 0.029789103272425604, 0.029715570535305616, 0.029780256206080824, 0.02985665309592758, 0.02958256455013168, 0.029251068829659766, 0.02923791355802406, 0.029916437190269797, 0.029810145133071342, 0.0299516311425093, 0.0301684367592789, 0.029255083211175575];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Kaspa 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

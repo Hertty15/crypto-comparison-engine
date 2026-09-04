@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internet Computer (ICP) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/14495/large/Internet_Computer_logo.png?1696514180" alt="Internet Computer logo">
+    <div>
+      <h1 style="margin:0">Internet Computer (ICP)</h1>
+      <div style="color:#8b949e">Rank #61 &middot; ID: internet-computer</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$2.47</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,375,694,149.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$2.60</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$2.46</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-0.40%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+2.70%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [2.40898966696472, 2.4232140071153716, 2.3768113479644897, 2.354816457765891, 2.3583865242352795, 2.3542707146964856, 2.3546638068911907, 2.3594121767904976, 2.358765046271911, 2.380227414228576, 2.3915084372681017, 2.3833332761385266, 2.3920764252875184, 2.405029896549425, 2.424550796250587, 2.424870868397155, 2.447994809342168, 2.4502756447536607, 2.4480977482321555, 2.4470534991911017, 2.4701673125555494, 2.4961605074199693, 2.4866102434859285, 2.458357015321073, 2.4655797860298616, 2.5199507449730736, 2.5324791735591567, 2.498682160152277, 2.5047766066514696, 2.514557287108394, 2.50890849519903, 2.50223020733118, 2.49715076836507, 2.4915546875866093, 2.4836485782656808, 2.4683167471983336, 2.456456025431618, 2.458454116481885, 2.4554937175505853, 2.4464162256249273, 2.4558181407791393, 2.42796325353549, 2.41123476114178, 2.415361227483765, 2.4261955147490526, 2.4373267710500173, 2.441486906239919, 2.4518877089829756, 2.461714351331572, 2.4570900569004492, 2.450287572779266, 2.4685689819571395, 2.451997396827685, 2.460473142112836, 2.4513735351724937, 2.4229212813096517, 2.424346618802258, 2.390605525454692, 2.346086817177657, 2.37799444718278, 2.347083271480471, 2.359094777536654, 2.3720786690589764, 2.4030721888666093, 2.4037351217235705, 2.3972179832507514, 2.4239903634589686, 2.4055693183227023, 2.3936387831719457, 2.4105697644878785, 2.3969088631713706, 2.3916297687524812, 2.380143084789636, 2.400483813556183, 2.3782881699946117, 2.397155357423161, 2.4055362994967133, 2.4047744604677077, 2.3969534696571597, 2.4032356608639716, 2.4111610958437732, 2.3965974656241893, 2.400407707872876, 2.4150612844360264, 2.417263256258547, 2.4073349313467394, 2.4179377808752736, 2.426035168759708, 2.4350438891341186, 2.4236429605622973, 2.415546854701396, 2.3849261628177088, 2.3980976365783184, 2.415133347937911, 2.4198164430096725, 2.4383496407747502, 2.442264067299802, 2.4592638535760662, 2.4607263035551368, 2.481075272263331, 2.479552598158253, 2.4640507144562425, 2.5000360981195886, 2.48323168975466, 2.473621215911014, 2.458444171703962, 2.479951316164081, 2.450422965443723, 2.441503449255685, 2.4423141879951635, 2.4733634367773476, 2.531541793489652, 2.5698165979265504, 2.566399659935351, 2.547334853966896, 2.5208390415232973, 2.5378411043765796, 2.4904242063849997, 2.481662593508824, 2.4779785778048993, 2.526196724627787, 2.489134754812114, 2.4950368746160962, 2.472197228060673, 2.484474961712904, 2.485259325981387, 2.480552462616111, 2.504535204828662, 2.4968778048158833, 2.4496087411603216, 2.464813851708248, 2.4438178107291524, 2.4701845623830336, 2.494005362722348, 2.4746697490894554, 2.494244336278514, 2.491751042712221, 2.4986739154096, 2.500586442000235, 2.498447070327135, 2.494047891677241, 2.49632500038173, 2.4932734250294466, 2.5156432023130617, 2.486399073540709, 2.530420725495072, 2.5491506089283953, 2.53002621919246, 2.53452535059365, 2.5338004919798496, 2.535079192242903, 2.5389778048243143, 2.5327341233477663, 2.5075208077223214, 2.514168857357134, 2.522219387453463, 2.536411641719303, 2.5288645306702904, 2.554209218149116, 2.5567234595225665, 2.5309979003503824, 2.5405022803452684, 2.5243477857098253, 2.5611555055716155, 2.578058579382719, 2.565062118446344, 2.5792437490062574, 2.4724410195631497];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Internet Computer 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

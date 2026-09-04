@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Dollar (USDG) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/51281/large/GDN_USDG_Token_200x200.png?1730484111" alt="Global Dollar logo">
+    <div>
+      <h1 style="margin:0">Global Dollar (USDG)</h1>
+      <div style="color:#8b949e">Rank #30 &middot; ID: global-dollar</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$3,247,120,976.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-0.02%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+0.00%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.9999633732498432, 1.000178047816904, 1.0000002608479595, 0.9999267345239169, 0.9999427421858608, 0.9998730576314557, 0.9998812315951974, 0.9999494246107349, 0.9999924052058672, 1.0000089107877441, 0.9999436534384811, 0.9999297606582287, 0.9999783492681661, 0.9999756269653736, 0.9999908100029367, 0.9999700942251865, 1.0000252849024478, 1.000000350779154, 1.0000553936010173, 1.0000502333363905, 0.9999632351737994, 1.0001200277420053, 1.0001455239461634, 1.0001492472125928, 1.000228137392238, 1.0000922931595089, 1.000200245622166, 1.0002322980694924, 1.0001956956567215, 1.0002539519919582, 1.0001725597417304, 1.0002892722780612, 1.0002602173829724, 1.0002456994702837, 1.000128439426842, 1.0002286451879299, 1.0002664460352213, 1.000189925970127, 1.000178886889411, 1.0001058872496598, 1.0001529025547136, 1.0002240920390053, 1.0002071249810693, 1.0002267194686212, 1.0001815792160609, 1.0001434980460775, 1.000073604386735, 1.0001716509644887, 1.0001754666431197, 1.0001422925258856, 1.0001353484830404, 1.0000463943316993, 1.0000484152511067, 1.0001078077786967, 1.0002411031840701, 1.000257434027248, 1.0002229722489806, 1.0001826931195101, 1.0000573810439475, 1.0000068951461214, 1.0000432750506165, 1.0000417672630681, 1.0000867408631713, 1.000001130647266, 0.9999382110126078, 0.999988115105823, 1.000100526314334, 1.000112427305058, 1.000034501082088, 1.0000965184519628, 0.999971186405541, 1.000053418038606, 1.0000579005691983, 0.9998929492263148, 0.9998160522796139, 1.0000044128396548, 0.9998612274393686, 1.0000912723298971, 1.0001803566341225, 1.0002321232040927, 1.0001257985090526, 1.0002096462520986, 1.000053910960461, 1.000043921580385, 0.9997646194155081, 0.9997915991382722, 0.9998561232033817, 0.9998755579112646, 0.9998454058886966, 0.9998456786638675, 0.9998146000842995, 0.9998019611620163, 0.9998058339248456, 0.9998632414531208, 0.9997510834469431, 0.9998514485409452, 0.9997121054026226, 0.9997300778056817, 0.9998088913813428, 0.999860453447146, 0.9999250363188849, 0.9999068043971322, 0.9998357672033737, 0.9998450921465533, 0.9997977996691408, 0.9998673487371772, 0.9998742076215317, 0.9998380931081988, 0.9997817994815891, 0.9997351897093186, 0.9998525602743312, 0.9999243206698393, 0.9998875532690747, 0.9998306883267879, 0.9998965248744812, 0.9999120823832611, 0.9998527718514928, 0.9999288023512837, 1.00008209877556, 1.0001040365126599, 1.0000495603579502, 0.9999744086280103, 1.0002444666438775, 1.0001337765596137, 1.0001942038455178, 1.0001778749937051, 1.0001277417431202, 1.0001811297062648, 1.0002245911162948, 1.0002419420865716, 1.000218365315583, 1.0000632218927168, 1.0002013740922482, 1.0002116846271698, 1.0002105252022666, 1.0002463896500267, 1.000110716098742, 1.0001286320343095, 1.0001006376197827, 1.0001836555693568, 1.0001420173123945, 1.0001184106716747, 1.0001140934529715, 1.000141948584366, 1.000365375797583, 1.000234278958218, 1.0002721991788501, 1.0002756815129084, 1.000260029632892, 1.0002287133088177, 1.0001905173211028, 1.0002085610358296, 1.000225581806365, 1.000207686625084, 1.000230837197885, 1.0001218666902596, 1.000136893036444, 1.0001560209317486, 1.0001107385485786, 1.000126324809961, 1.0000624379537502, 1.000142853794077, 1.0002882667163353, 1.0003525384013694, 1.0001368467699625, 1.000111139673582, 1.0002089091597786, 1.0000859915628348];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Global Dollar 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

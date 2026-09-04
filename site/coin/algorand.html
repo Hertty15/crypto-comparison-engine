@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorand (ALGO) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/4380/large/download.png?1696504978" alt="Algorand logo">
+    <div>
+      <h1 style="margin:0">Algorand (ALGO)</h1>
+      <div style="color:#8b949e">Rank #82 &middot; ID: algorand</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.0912</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$824,005,856.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.10</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.09</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-1.60%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+2.90%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.08866481609091753, 0.08932397076378894, 0.08781406252225815, 0.08681221282433521, 0.08673512651966406, 0.08613285929598542, 0.08645268267107764, 0.08712910051673349, 0.0864622514776521, 0.0866933629632245, 0.08718744714769323, 0.08711124210339621, 0.0870097871008323, 0.0863853726362399, 0.08585649008178467, 0.08649846997632396, 0.08654487366659869, 0.08603088473086835, 0.08594748064801265, 0.08581144661621083, 0.08576760180922502, 0.08588298222429236, 0.08564695148713383, 0.08615377020204411, 0.08649341587133744, 0.08717143831494167, 0.08717947355668706, 0.08789666341924389, 0.08720460848304236, 0.08788731305848342, 0.0877473170274423, 0.08783407872789609, 0.08768218475946958, 0.0877095727490039, 0.08770340567316381, 0.08770455360325134, 0.08727991720475166, 0.08751934511408388, 0.08741124618032997, 0.08686740804878454, 0.08697298154618173, 0.08723821609412248, 0.08696320570587568, 0.08695586273637185, 0.08650940681079877, 0.08693213371770458, 0.08684801112019704, 0.08708056532325023, 0.08741227474790636, 0.08737090285104868, 0.08734348758082124, 0.08872289610455693, 0.08836678302299651, 0.08858761330875146, 0.08820145248358584, 0.08737622047332944, 0.08742209708442698, 0.08692545212889412, 0.08456932799173511, 0.08519667538857646, 0.0844480790270341, 0.08382610698192057, 0.0843611569203583, 0.08446800157987033, 0.08506277080885634, 0.08535752595313267, 0.08565735868406935, 0.08535699639195463, 0.08504039935397596, 0.08510547553473069, 0.08523448203970757, 0.08484159208875332, 0.08435340788590104, 0.08536805034535816, 0.08510035468809184, 0.08521098912970913, 0.08565947918527754, 0.08598875350137046, 0.08562900980676803, 0.08570947834427711, 0.08604535204899938, 0.08547963455111282, 0.085637196287319, 0.0861465708292793, 0.08788665533978077, 0.08830112831203027, 0.09048579991115374, 0.09025404514464429, 0.090769252485691, 0.08980024084077212, 0.08917207275037656, 0.08893207035598742, 0.08975968847907122, 0.08996837486598099, 0.09074212206105992, 0.08929497193384028, 0.08893659265266714, 0.0896819867592229, 0.08875871412255155, 0.08798230516726535, 0.08777756932200591, 0.08855859432505617, 0.08848408939220617, 0.08832857550021059, 0.08790703422156798, 0.0878309327393869, 0.08809604660277012, 0.08814737504439824, 0.08726642238004767, 0.0888257847210426, 0.08970827764621217, 0.09030675642168738, 0.09089667697226392, 0.09079580514931926, 0.09065857522863222, 0.08993830660458993, 0.08915359020478822, 0.08843824409677344, 0.08894773219340914, 0.08816810522996289, 0.08959608581078958, 0.08944423563629396, 0.09029165091015573, 0.09177575217820937, 0.0924842759779709, 0.0926247158450603, 0.09229651000272816, 0.09198748216667742, 0.09251425429042727, 0.09220428602762987, 0.09317773465087184, 0.09279889157712319, 0.09275930879946803, 0.09264388146891532, 0.09202055387710582, 0.09301376507811099, 0.09231712734056838, 0.09172769511747607, 0.09188390592157505, 0.09275935358099235, 0.09236770151868332, 0.09258092022324636, 0.09248293279183112, 0.09367918971806123, 0.09250841747805315, 0.09430806858908665, 0.09486752909682422, 0.09478590049860804, 0.09454635784194754, 0.09482036040440672, 0.09423166249505728, 0.09428783255578808, 0.09379527515306103, 0.09277242609244472, 0.09337730387147777, 0.09222014483765541, 0.09201714793455831, 0.09318861636299194, 0.0947109114237085, 0.09262695833103586, 0.09181834005353887, 0.0925590682489404, 0.0923938639790124, 0.09260559881928015, 0.0925817409630352, 0.09255375886314232, 0.09290067326663899, 0.0907648687737293];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Algorand 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

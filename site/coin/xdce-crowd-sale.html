@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XDC Network (XDC) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/2912/large/xdc-icon.png?1696503661" alt="XDC Network logo">
+    <div>
+      <h1 style="margin:0">XDC Network (XDC)</h1>
+      <div style="color:#8b949e">Rank #100 &middot; ID: xdce-crowd-sale</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.0278</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$554,881,687.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.03</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.03</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-0.20%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-1.30%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.028308847682151302, 0.02812686085331664, 0.02838980021883656, 0.02750247288078982, 0.027395694130858548, 0.027440491088537754, 0.02734401400746967, 0.02739893144209384, 0.02738915164809732, 0.027440948321558852, 0.027705283577773014, 0.027724405556721517, 0.027718006670701182, 0.027722058785471647, 0.027680894515734255, 0.027694722084841805, 0.027675221927214878, 0.02749907654501567, 0.027525015376788066, 0.027568578443431038, 0.02768770618806943, 0.027730461850349927, 0.027666206230211404, 0.02771372017405337, 0.027567075091978935, 0.027573286593830324, 0.027573402981416896, 0.027574612834543547, 0.027578085499655555, 0.027554604725070122, 0.02755595817149397, 0.027569903549943306, 0.027528811682429082, 0.027477653217940785, 0.027491330728196463, 0.027543141565053154, 0.02753863105260813, 0.02754903392728701, 0.027546742902045614, 0.027529627449387157, 0.02752846747352436, 0.027557405311901206, 0.027665451379968464, 0.027721904597209444, 0.027789099182431717, 0.0278352704457929, 0.02785057344515269, 0.027586952475944396, 0.027551756178213198, 0.027546648982521297, 0.02744340378641376, 0.027409707595388244, 0.02751647810808371, 0.027544969595483148, 0.027543506956185376, 0.02752236972880756, 0.027549416832984414, 0.02754125232075371, 0.027443219111339155, 0.02720078369855282, 0.02736032072722319, 0.027347477215750742, 0.02740313563562629, 0.02744559967747923, 0.02762545251003443, 0.027690421537032238, 0.02769197786924441, 0.02769979522343931, 0.027938798416750402, 0.0279412474347929, 0.027908152288618315, 0.02790611947087941, 0.027770152091381596, 0.02777841719564182, 0.027789488127871027, 0.027788613663146042, 0.027784291392878174, 0.02760250534041818, 0.027602550279278368, 0.027590174191910132, 0.02758660512458171, 0.027600889362584254, 0.02758895935492063, 0.027724640463570885, 0.02772577773178992, 0.027740434672673706, 0.02775559461110133, 0.027778252585704925, 0.02788883774998701, 0.027912915070504453, 0.028031132507238054, 0.02766089476583441, 0.027500325953766603, 0.02780572739339874, 0.027777056399124547, 0.027988109779927387, 0.02769370738226807, 0.02769670613480589, 0.027670892010490535, 0.027658124347413292, 0.02769532797258681, 0.027678623291567894, 0.027537579065444052, 0.027831491617531727, 0.02764990382326958, 0.02766710371729664, 0.027663262024255623, 0.027793472532444248, 0.02782412683051867, 0.027677544020385744, 0.027693850364328195, 0.02766746431905251, 0.02767985844600472, 0.027665942086704, 0.027685621989855382, 0.027651881263632022, 0.027659931421293336, 0.027683526050073008, 0.027702034160217395, 0.027673186608197363, 0.02766447666709725, 0.027652232619577256, 0.027662462462773787, 0.027684676069354007, 0.027670824783144404, 0.027681284246691713, 0.027656198031764837, 0.0276784602303981, 0.027687228994765174, 0.02767706970432998, 0.027689987631720703, 0.027684684254531005, 0.02766250072811568, 0.02768426408710819, 0.027679606127489615, 0.027719298843883296, 0.027798731041923316, 0.027815068387982148, 0.027831070962657207, 0.027842141765278352, 0.027836102902357593, 0.0278127785808032, 0.02782373301052332, 0.027837598500901665, 0.027870295498536365, 0.027879762055897064, 0.028007096229766215, 0.028152711433260626, 0.027985292734533873, 0.028001436066822125, 0.028021974343388992, 0.028234332445619008, 0.02806194144634849, 0.02807391126848406, 0.02807458986274513, 0.0280898633023002, 0.028207080343554878, 0.027971713496058512, 0.02800974991356035, 0.028022584410190933, 0.028292408229076756, 0.028164922964034632, 0.02815163962977107, 0.02817964612332034, 0.028156646429997864, 0.02810057175694944, 0.028278466146964176, 0.027809539607131076];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'XDC Network 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

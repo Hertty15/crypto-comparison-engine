@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tether Gold (XAUT) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/10481/large/logo.png?1774627372" alt="Tether Gold logo">
+    <div>
+      <h1 style="margin:0">Tether Gold (XAUT)</h1>
+      <div style="color:#8b949e">Rank #37 &middot; ID: tether-gold</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$4,417.71</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$2,706,499,286.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$4,498.67</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$4,373.38</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-1.03%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-3.80%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [4601.937821758884, 4569.998075376097, 4516.923724489089, 4473.657437225431, 4466.27599585155, 4453.961208966253, 4455.685316377781, 4451.3803694751405, 4456.176498796457, 4460.706304637345, 4458.882274461991, 4458.096443110945, 4458.001719684218, 4457.021090665024, 4457.508321461574, 4456.4990207177425, 4457.2117700250255, 4454.39576473342, 4454.460306756977, 4455.209978494908, 4455.4812987905125, 4455.036282815479, 4454.286284010626, 4454.486443758687, 4456.8408027944715, 4457.177155753948, 4457.0496485022295, 4456.524367774613, 4457.094966775112, 4456.548469791134, 4456.505291421317, 4456.552760008295, 4456.520486863327, 4457.015428446877, 4457.7370538183495, 4457.412344986325, 4457.687129739854, 4455.633037577216, 4456.991861413688, 4456.755458524876, 4454.904849402372, 4457.050092850433, 4456.992781783067, 4456.499788576193, 4457.178585338968, 4456.355994621805, 4456.52498023915, 4457.568494432685, 4457.555698985149, 4457.613246407535, 4456.3069863969895, 4458.085589727672, 4456.557874842902, 4457.260096995233, 4457.049742970232, 4452.84905931237, 4447.227144571742, 4448.451147411897, 4443.787495995633, 4442.607229333451, 4427.324109414459, 4410.51044257087, 4411.605432077573, 4414.699385722022, 4433.196054789815, 4431.877829367894, 4436.103643517462, 4428.621687074841, 4436.1955219220645, 4444.54152756397, 4445.777921212791, 4427.031448618277, 4409.054680711298, 4425.720582632655, 4418.182010419676, 4425.613471835349, 4427.8790744888765, 4423.937991606119, 4443.8372267191835, 4439.264888878185, 4441.270305854651, 4437.65305277833, 4442.416882967172, 4442.017845225351, 4434.7818437522255, 4433.958491315918, 4429.894047741755, 4419.132987096595, 4432.4412169457755, 4423.442315201922, 4413.23865180369, 4367.849296334878, 4362.601414818229, 4376.177315665072, 4371.665295837782, 4355.1410473938295, 4362.2682450635275, 4356.358102676159, 4369.188620189683, 4349.625807901594, 4341.933189436788, 4331.784922280227, 4328.316674442192, 4333.112931534976, 4336.613394841729, 4332.02780597169, 4328.760975693109, 4319.717852912672, 4293.359171353541, 4304.249450748026, 4304.834622722245, 4309.217537442634, 4321.822533528991, 4321.390282576492, 4324.2892876554615, 4313.579904938995, 4309.227189487027, 4309.1313658003955, 4329.706184917468, 4332.4262628067045, 4379.82449143254, 4373.283244304445, 4369.580458023499, 4366.423189331483, 4375.228603011395, 4372.878248564431, 4386.718738842901, 4386.527009961403, 4386.92571599356, 4382.906012254367, 4383.537205877035, 4391.179870266737, 4405.743325827911, 4412.837099792873, 4421.938091333459, 4427.658585115807, 4422.6579746958105, 4413.148214162399, 4420.74844716054, 4428.881809787413, 4420.312862427564, 4420.234693773731, 4435.986539757204, 4481.391562098876, 4458.258778102248, 4475.950337838709, 4483.730992380937, 4477.882303855007, 4477.865364798737, 4467.079168764359, 4466.4572943472085, 4464.95992420098, 4468.379367347803, 4465.973089981213, 4471.8292141679, 4477.646792500156, 4470.965196883484, 4467.883912064732, 4458.327298107573, 4466.113532750455, 4461.542864147497, 4453.3605455235365, 4474.568276700617, 4469.925953655379, 4460.168579889442, 4466.93315090948, 4461.197391329566, 4391.304013194002];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Tether Gold 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

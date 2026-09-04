@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAX Gold (PAXG) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/9519/large/asset-paxg.png?1785284785" alt="PAX Gold logo">
+    <div>
+      <h1 style="margin:0">PAX Gold (PAXG)</h1>
+      <div style="color:#8b949e">Rank #47 &middot; ID: pax-gold</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$4,422.37</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,910,450,848.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$4,510.14</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$4,381.72</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-1.15%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-3.80%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [4607.423133178447, 4574.080927747378, 4521.097449988767, 4478.115160057598, 4469.378745904164, 4455.883943162366, 4458.110579515697, 4455.457719634899, 4459.806175244029, 4462.328849881184, 4461.752218285947, 4461.469862834205, 4462.498664166222, 4459.666408496736, 4461.192803235731, 4460.483238874138, 4460.311083924491, 4457.981296732635, 4457.563974570492, 4458.906992239872, 4457.944160219532, 4456.897581517727, 4457.050686724289, 4457.862635136772, 4459.67098963457, 4461.776425306828, 4461.959422698784, 4461.922036517169, 4462.286138901375, 4462.068350319913, 4460.521277817373, 4460.426096193298, 4460.947493593199, 4462.062731917813, 4464.590968574843, 4464.498237099708, 4465.103989563329, 4462.886346700986, 4462.568381307564, 4462.293456008219, 4462.517274116272, 4463.059179507045, 4464.255958316627, 4462.764968293524, 4463.548190890982, 4462.140674405784, 4461.7342296978495, 4464.7676343859575, 4466.761734487956, 4469.350259626789, 4468.753692625104, 4472.850205699296, 4471.444114254156, 4471.367084397148, 4470.774551304157, 4465.407589498966, 4459.598787718727, 4458.673557210991, 4453.408770694456, 4452.226358491707, 4436.32280457277, 4418.8295133357715, 4419.475924086743, 4422.771998712979, 4438.261826643115, 4438.014865465231, 4442.680907476001, 4435.574214223556, 4443.906406865714, 4452.244416872286, 4453.326280218652, 4435.495928358082, 4418.090868281934, 4432.91755076245, 4425.657488219366, 4433.700901685765, 4436.200176470739, 4432.844497247229, 4452.082228380516, 4447.760933774778, 4448.714690750624, 4444.930841386428, 4450.439448125702, 4450.626374473614, 4443.186029740442, 4442.897050228013, 4437.761318168139, 4427.348555362876, 4440.783793315099, 4430.797463625369, 4420.492510923785, 4376.559891864885, 4371.37166163739, 4384.160694047185, 4379.987745769757, 4363.279857445205, 4370.726027360775, 4366.426734961872, 4379.226781226012, 4358.874200173129, 4350.314391756538, 4341.188275625524, 4336.412256834081, 4341.383656638099, 4345.427674312995, 4339.486386806845, 4336.461084182155, 4329.496017913123, 4300.880937475217, 4313.721494818854, 4312.794035728291, 4315.929143361022, 4330.1164895758975, 4329.469292245183, 4333.947780430311, 4323.327270893717, 4317.1036601565465, 4318.291491633254, 4340.362727316075, 4341.622923565622, 4388.945506531026, 4382.84935948576, 4380.450698158161, 4377.864102335906, 4386.559065016137, 4383.280427534716, 4397.757814621712, 4397.342156176618, 4398.045701949601, 4392.44908701733, 4392.822990165681, 4401.085949286609, 4416.593796638647, 4425.824804226503, 4435.587402783025, 4440.747275002892, 4435.887960474975, 4425.511825309433, 4433.309096576148, 4440.070298606022, 4431.681010190265, 4432.251922752879, 4447.732393986507, 4495.460283141882, 4467.5675787278105, 4485.714083066534, 4493.291200163415, 4486.719922107234, 4488.033245556066, 4477.130008418265, 4475.379036728881, 4474.642739539122, 4477.057944599953, 4474.741566293734, 4481.696047344231, 4485.73877318446, 4478.477375236824, 4476.952123244978, 4467.534821521604, 4474.723315574102, 4470.925340810482, 4462.122377325818, 4482.679791200946, 4478.727867106429, 4469.324718777576, 4474.536768832449, 4468.865582019616, 4398.725291978237];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'PAX Gold 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

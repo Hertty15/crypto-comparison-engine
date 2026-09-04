@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morpho (MORPHO) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/29837/large/Morpho-token-icon.png?1726771230" alt="Morpho logo">
+    <div>
+      <h1 style="margin:0">Morpho (MORPHO)</h1>
+      <div style="color:#8b949e">Rank #52 &middot; ID: morpho</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$2.46</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$1,692,972,425.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$2.56</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$2.40</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+1.88%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-1.90%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [2.5440954962914097, 2.5368559611077783, 2.486945732605045, 2.454269050477946, 2.4435130830937295, 2.411989146429113, 2.4052844974206637, 2.4091947039491357, 2.404892831325178, 2.4319783894980014, 2.422759199022925, 2.398847265471465, 2.4022217193203974, 2.378880874956427, 2.373264046249604, 2.3721825748446213, 2.395691997455413, 2.4127146025076573, 2.413896090159034, 2.4073799854393236, 2.4152201183170465, 2.4241693652384115, 2.42719705015554, 2.4354868189135, 2.434946199932676, 2.4347701610754546, 2.417562672489929, 2.408639971942541, 2.393800363124367, 2.393232957639807, 2.4222248319464605, 2.417954707148859, 2.396279326801304, 2.394624357047016, 2.408606241906329, 2.4123719778184207, 2.413440277951631, 2.427967481010458, 2.449264618706806, 2.4518072229793155, 2.4398809079099104, 2.439983071113835, 2.4309868545663407, 2.4216794379474376, 2.431383452615431, 2.4450026350016283, 2.4666425449454468, 2.4852505557996967, 2.4852846440703313, 2.4908713891023435, 2.486888212900789, 2.5346346007861236, 2.5179452711415036, 2.5182169256904214, 2.494800251065175, 2.484775813883996, 2.474614775268816, 2.4633608545358596, 2.43202683856527, 2.457364889426009, 2.44089788681542, 2.4698631582132804, 2.477447456190543, 2.4810564041479686, 2.5009209973255184, 2.531463940083274, 2.527450502358236, 2.549160021916326, 2.5496163413077158, 2.600098588623522, 2.587006435629863, 2.599741538884846, 2.5694682336858032, 2.6489606591415567, 2.6510787707198316, 2.6821258690286207, 2.70561063334948, 2.6347746965556103, 2.6454105864485227, 2.671002528648696, 2.6229005515177692, 2.480890897817361, 2.5124049655776495, 2.515273362509791, 2.504155745348377, 2.500478173379722, 2.5370521691852153, 2.5182651246981185, 2.551486530434759, 2.5584356484706707, 2.5741990601032962, 2.5704413372145645, 2.566354556582031, 2.5589193483390766, 2.573031589664184, 2.525443239631868, 2.5387398375190053, 2.5495479161479677, 2.554860591683378, 2.5089509193659203, 2.510209197330807, 2.519643086837309, 2.5318984444016173, 2.560664045791495, 2.565148944876044, 2.585104046339978, 2.61008328556325, 2.6191772597608725, 2.6002311214562686, 2.6181099169593463, 2.6615676582496457, 2.6439912878911853, 2.613978497308151, 2.597498077180718, 2.5885249980248655, 2.563866158618222, 2.55951140793831, 2.5190953352237813, 2.5151831651044194, 2.4947683761260495, 2.5227147185549232, 2.46124064620633, 2.476769056025975, 2.4635507319820595, 2.498659128943512, 2.5138542055651643, 2.519809339799254, 2.5144057090509424, 2.4982355868520076, 2.497497645542395, 2.5134882386180015, 2.499271730979046, 2.497323899491453, 2.5156747111919104, 2.5212774353528262, 2.536923244221869, 2.5199606353455986, 2.531811797443602, 2.5287854747453893, 2.5211585861092938, 2.442715936313383, 2.4272019722049896, 2.436538337354349, 2.4404980103656637, 2.410160113286148, 2.437893414116173, 2.5149418705999818, 2.4902051668679057, 2.497678402815106, 2.541240795835311, 2.531961468367651, 2.527101663394335, 2.518964211084596, 2.4866295275453503, 2.4847449369776795, 2.4697449590073006, 2.460554214566951, 2.473104154072058, 2.4826795583460948, 2.471855863161473, 2.490076145526603, 2.4866235210976497, 2.486040871235873, 2.4920087207585246, 2.484879580805851, 2.520619439633775, 2.5297291770251085, 2.433311564222663];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Morpho 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

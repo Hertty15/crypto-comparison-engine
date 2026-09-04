@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USDC (USDC) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/6319/large/USDC.png?1769615602" alt="USDC logo">
+    <div>
+      <h1 style="margin:0">USDC (USDC)</h1>
+      <div style="color:#8b949e">Rank #6 &middot; ID: usd-coin</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.9999</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$74,203,884,721.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$1.00</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value negative">-0.01%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+0.00%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.9999454114618529, 1.000023423413031, 0.9999659814368653, 0.9999635144488669, 0.9999644565983702, 0.9999328350628404, 0.9999046544625491, 0.9999405987971677, 0.9999491862943829, 0.999958530936463, 0.9999551816697823, 0.999962619990029, 0.9999832278486777, 0.9999851249690002, 0.9999538824263751, 0.9999728098083909, 0.9999947189413092, 0.9999634376833771, 0.9999857602100598, 1.0000083362811798, 0.9999634890691917, 0.9999659641587842, 1.0000098944361249, 1.0000133658692612, 0.9999994139448318, 0.9999536095414647, 1.0000072306525838, 1.0000028113156927, 1.0000057347309264, 1.000008739535994, 0.9999593952768152, 0.9999767147912535, 1.000002232111969, 0.9999743752086353, 0.9999576887533264, 0.9999724419800674, 0.9999743778648726, 0.9999681208368798, 0.9999503146792833, 0.9999362719961551, 0.9999772444723798, 0.9999423782072252, 0.9999367283660755, 0.9999383131770999, 0.9999209931711831, 0.9998993577882451, 0.9998923530093108, 0.9999302906026355, 0.9998498302872699, 0.9998749462095347, 0.9998701118875495, 0.9998135395456064, 0.9997989525477088, 0.9998334072675923, 0.9998645866993777, 0.9998660649510623, 0.9998771612323702, 0.9998616089712316, 0.9998871553673769, 0.9998027154874312, 0.999826366530265, 0.999809253106646, 0.9998702908852958, 0.9998617606608008, 0.9998266564013581, 0.9998813261594355, 0.9999124754579822, 0.9998977854640834, 0.9998362156394338, 0.9998138981347133, 0.999789350580554, 0.9998577726487564, 0.9998375896913253, 0.9998947251573097, 0.9998148696993358, 0.9998509293676131, 0.9998934646485219, 0.9999063911591246, 0.9999294093227866, 0.9999308407094272, 0.9998943810513127, 0.999885506119151, 0.9998760696911931, 0.9998775485878535, 0.9998599903430495, 0.9998498371278304, 0.9998777444488123, 0.9998205752582707, 0.9998374754459823, 0.9998510347261366, 0.9998544551502502, 0.9998636474940157, 0.9998767802815084, 0.9998951444265878, 0.9998582392980095, 0.9998377701550507, 0.9998514267109243, 0.9998685987040786, 0.9998729012291624, 0.9998271629858153, 0.9998461036349298, 0.9998301983817895, 0.9997765503358251, 0.9998105735783217, 0.9997425018710462, 0.9997589951984389, 0.9997885532340468, 0.9997769738020776, 0.9997770470541802, 0.9997598766411052, 0.9997735512585886, 0.9998099162058383, 0.9998102413162568, 0.9997796049873646, 0.9998011749646168, 0.9997956896851291, 0.999776364469668, 0.9997566866966778, 0.9996952614022838, 0.999714122124212, 0.999690548069389, 0.9996494529577306, 0.9998119876524818, 0.9997485545658009, 0.9997622797514382, 0.9998046105553731, 0.9997836491556717, 0.999803705888783, 0.9998426989439704, 0.999828106493688, 0.9997948349531954, 0.9998197528157788, 0.9997898282671462, 0.9998009836668491, 0.9998122103002254, 0.9997897815080605, 0.9998269539294307, 0.9998616728625775, 0.9998341760774409, 0.9998154814761199, 0.9997965715733147, 0.9997755216808201, 0.999805329295738, 0.9998416418671, 1.0000833399453495, 0.999927794331862, 0.9999334921341391, 0.9999282774807728, 0.9999453725415246, 0.9998984345430415, 0.9999198972710168, 0.9998920888775049, 1.0000163938300348, 1.0000060817938317, 0.9999207953527021, 0.9999259789740463, 0.9999120578972907, 0.9999102001820417, 0.9998885338519953, 0.9998820822969141, 0.9998988764354597, 0.9998842580303362, 0.9998373400481002, 0.9998807546075767, 0.9998460084509947, 0.9998976196009245, 0.9999606270209142, 0.9999202876370648];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'USDC 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

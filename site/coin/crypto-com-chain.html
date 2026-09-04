@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cronos (CRO) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/7310/large/cro_token_logo.png?1696507599" alt="Cronos logo">
+    <div>
+      <h1 style="margin:0">Cronos (CRO)</h1>
+      <div style="color:#8b949e">Rank #36 &middot; ID: crypto-com-chain</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.0564</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$2,737,712,052.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.06</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.06</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+2.63%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value negative">-3.50%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.05876721937355384, 0.05919751586760801, 0.05847178883804325, 0.05742658839778723, 0.057098820527055116, 0.05651744976218176, 0.05672048127707938, 0.05696475515128997, 0.05687333697453392, 0.05714924888805158, 0.05746997074760932, 0.05700800891872355, 0.05679607233346019, 0.05683125011077439, 0.05657924114323099, 0.057040871787120175, 0.05725512304894232, 0.0571255703769494, 0.05706222104020987, 0.05687316053143323, 0.0568614940275651, 0.05715988644447477, 0.05759958862459372, 0.0578394397690105, 0.057560822752584576, 0.05771174926440288, 0.05765179987936832, 0.05782895508128858, 0.057293259930617325, 0.05743359763130114, 0.05745373490562431, 0.0576006669371341, 0.05749173715432031, 0.05750690565612878, 0.0577719916468069, 0.057686647111481554, 0.05762644903137906, 0.05740423367640123, 0.05713814137510114, 0.05727308120083197, 0.05761414975349451, 0.057811863932929745, 0.05748588103726089, 0.05753342117065222, 0.057231508262935486, 0.05726259607426054, 0.05716034836025502, 0.061673360088838475, 0.06236453303757588, 0.06020838872967997, 0.06012177451103433, 0.05969218810346804, 0.05979158928281276, 0.06025833193962394, 0.05951039318650514, 0.05923649376507549, 0.05827182484361158, 0.057959071214065065, 0.05711799252441793, 0.05723986531792015, 0.05622460453317877, 0.05615680989446916, 0.05637094940243753, 0.05611686940787652, 0.056603528572623116, 0.05691539256669642, 0.05681289790015206, 0.05636119489238908, 0.05633990975180769, 0.056469649871024034, 0.05550280660818847, 0.055223865985562476, 0.05556320341967024, 0.05584880442296109, 0.05554085308873781, 0.05610387686133832, 0.056211418109214886, 0.05659134425062328, 0.0560983344660798, 0.0560076236010118, 0.05697108551641398, 0.05686823633189041, 0.056703704525745864, 0.05684793252027183, 0.05679690973146081, 0.05629549460585473, 0.055845044714410194, 0.05615713600663819, 0.05681417496262435, 0.05646737260107003, 0.05661168166316783, 0.055908212849836665, 0.05608493616694948, 0.05639045050495943, 0.05664305423169081, 0.056015043023661844, 0.05624215281527849, 0.05621777951100475, 0.055763764449347136, 0.05545960281694036, 0.05506367363663863, 0.05471743887603423, 0.054936602276172176, 0.05498702731723435, 0.055002201547380836, 0.05470382640502238, 0.05489181561480918, 0.05481471811723673, 0.05447885342466295, 0.054679200425560556, 0.05484364342807818, 0.05501935368894222, 0.05564613877560062, 0.0552531924440368, 0.05507876023673663, 0.05467874402544698, 0.05452380039713541, 0.053986953987967747, 0.053880357276763796, 0.05403516054783285, 0.05467377782690238, 0.05398389069813115, 0.053900712160860356, 0.05375046926730997, 0.05366510813061832, 0.054235934877115886, 0.05391790259352082, 0.05414254505873317, 0.05421147852919288, 0.05408276407691757, 0.054406178499636866, 0.05410690380347386, 0.054167717544463194, 0.05445336630829026, 0.05424562609699568, 0.054471462227091344, 0.0546738697801293, 0.05511122167285532, 0.05538423241037768, 0.05523314643501043, 0.05483117931094049, 0.054726273896983334, 0.05509849524651134, 0.05516542304216018, 0.05494560763864902, 0.055926927361685023, 0.05707722734100781, 0.057408915822324116, 0.05739441167560797, 0.05758282328080977, 0.057741092437976746, 0.058517150453939154, 0.0582103124365841, 0.05770945350292535, 0.057734252757844134, 0.05752021414231106, 0.057571790198624816, 0.05776813115480752, 0.05796081102863768, 0.0578181229523203, 0.057213968590451324, 0.05701096022451092, 0.05695281984686635, 0.05747299731161171, 0.05777360121676893, 0.05764085008575354, 0.05765458994495873, 0.05593727297164782];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Cronos 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>
