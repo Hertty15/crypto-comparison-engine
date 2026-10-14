@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pearl (PRL) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/102173580/large/pearl.png?1780324634" alt="Pearl logo">
+    <div>
+      <h1 style="margin:0">Pearl (PRL)</h1>
+      <div style="color:#8b949e">Rank #97 &middot; ID: pearl-2</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$2.03</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$699,043,837.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$2.02</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$1.66</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+20.86%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+51.32%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [1.316182922963963, 1.3018324249441866, 1.26408060946876, 1.3170448069100018, 1.3660320355177045, 1.381307628442534, 1.409743259893826, 1.432601278354729, 1.4778093424634957, 1.373208098432031, 1.4035571637860365, 1.3944896552261905, 1.3920858820920279, 1.4289774938962456, 1.3964850731053071, 1.387823064856738, 1.3597404787970833, 1.3228573350535895, 1.3170825501814172, 1.288950421905468, 1.2809046119758654, 1.2996202496818883, 1.3119900430843543, 1.3728434808211105, 1.471533765960753, 1.4082871887805997, 1.4526589860934982, 1.4153333797748926, 1.4708199589170743, 1.4170590136650103, 1.4390717494823866, 1.3393799819310193, 1.3499032067836843, 1.363963745070536, 1.3525140101069306, 1.353554351075816, 1.3540687911258882, 1.3576923722948329, 1.3350091673847349, 1.3084248031356487, 1.3018210793488583, 1.299903786194847, 1.2913195810488998, 1.281154555843478, 1.3802078307643428, 1.3856500725691023, 1.4081813470130662, 1.4430313579860579, 1.4182923082762269, 1.3789896299018787, 1.428569780843928, 1.4104778249747247, 1.4087553772175068, 1.3900242971894177, 1.3825777890308606, 1.3617952264960256, 1.3496752190912629, 1.339762207283222, 1.3783895672845916, 1.4090560244903771, 1.3892934245330388, 1.3668174826232589, 1.3168137854023159, 1.3316253394912938, 1.33644251535402, 1.3201965019980684, 1.318891982594291, 1.3393829037797718, 1.3187269465038949, 1.3388422968553855, 1.3965730414337907, 1.4122522380383975, 1.4285108217989742, 1.3633921539409117, 1.3691005913700807, 1.3603998242283755, 1.39008583541203, 1.3802515087306135, 1.36911200790949, 1.3991089313133058, 1.406187224083198, 1.3884464206785685, 1.3895472734307222, 1.3984588866111825, 1.3886533827027692, 1.4085688007592339, 1.3985374935415658, 1.3831945946145991, 1.378918403075008, 1.3865819634467016, 1.371577767747153, 1.3852954109202862, 1.4098766302219299, 1.3588854265694048, 1.3489449861060978, 1.3593086923576239, 1.3616128675080543, 1.348794219370418, 1.3517084000716455, 1.3288962653176688, 1.3355578531377705, 1.3191332765250814, 1.3189554380282145, 1.327683512105574, 1.362230788057614, 1.3671744331309212, 1.350906061300972, 1.348883830680395, 1.3633183114229117, 1.3785661887602212, 1.3492439448730138, 1.354845770984392, 1.3689393692120237, 1.3698368941654373, 1.3718304382337643, 1.368388088612127, 1.368339011480854, 1.3589381761871653, 1.3790087162906188, 1.4275527925289062, 1.4276595406420942, 1.4379419315763717, 1.4502167052583115, 1.4619834983751954, 1.4508698434170992, 1.4385369925265712, 1.5044248949347825, 1.4986072180399344, 1.527137321447574, 1.645380250563395, 1.6475215760938478, 1.597662832962204, 1.597472159125792, 1.5315503950622118, 1.5426330339462717, 1.542819190840304, 1.518785034046264, 1.5291118100095258, 1.5287003898122105, 1.5416487205992515, 1.5979904612034979, 1.65731133396348, 1.6479167895964675, 1.6646086101239792, 1.6684938477972506, 1.6779398085027726, 1.6769627384754966, 1.6600663090097496, 1.7816568658453966, 1.8462548437723507, 1.88189788474628, 1.828289634515358, 1.7314048268515836, 1.8278587123320986, 1.841102791210927, 1.8493774916550096, 1.8086837055843745, 1.7884388345833482, 1.7921804486411483, 1.7898721388251517, 1.8567001428220125, 1.8669978661684439, 1.900957000579793, 1.916454023549078, 1.898854566274215, 1.9578996380110572, 1.9288871819785018, 1.9405960635082942];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Pearl 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>
