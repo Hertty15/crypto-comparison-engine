@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Celestia (TIA) — Price &amp; Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0d1117; --text:#c9d1d9; --accent:#58a6ff; --border:#30363d;
+          --green:#3fb950; --red:#f85149; --card:#161b22; }
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,
+         BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         margin:0; padding:0; line-height:1.5; }
+  header, main, footer { max-width:1100px; margin:0 auto; padding:20px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 { font-size:1.8rem; margin-bottom:0.25rem; }
+  .timestamp { color:#8b949e; font-size:0.9rem; margin-bottom:1rem; }
+  #searchInput { width:100%; padding:10px 12px; margin:12px 0 16px;
+    background:var(--card); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-size:1rem; }
+  #searchInput::placeholder { color:#8b949e; }
+  .table-wrapper { overflow-x:auto; border:1px solid var(--border);
+    border-radius:8px; }
+  table { width:100%; border-collapse:collapse; min-width:720px;
+    background:var(--card); }
+  th, td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--border);
+    white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+  th { background:#0d1117; cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--accent); }
+  th .arrow { color:var(--accent); font-size:0.8em; }
+  tbody tr:hover { background:#1c2128; }
+  .coin-cell { display:flex; align-items:center; gap:10px; }
+  .coin-cell img { width:24px; height:24px; border-radius:50%; }
+  .positive { color:var(--green); }
+  .negative { color:var(--red); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin:20px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px; }
+  .stat-card .label { font-size:0.8rem; color:#8b949e;
+    text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card .value { font-size:1.25rem; font-weight:600; margin-top:4px; }
+  .coin-header { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .coin-header img { width:48px; height:48px; border-radius:50%; }
+  .chart-container { background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:16px; margin:20px 0; }
+  .back-link { display:inline-block; margin:10px 0; }
+  .ad { margin:32px 0 8px; padding:24px; text-align:center;
+    border:1px dashed var(--border); border-radius:8px; color:#8b949e;
+    background:var(--card); font-size:0.9rem; letter-spacing:0.05em; }
+  canvas { width:100% !important; max-height:400px; }
+
+</style>
+</head>
+<body>
+<header>
+  <a class="back-link" href="../index.html">&larr; Back to Dashboard</a>
+  <div class="coin-header">
+    <img src="https://coin-images.coingecko.com/coins/images/31967/large/tia.jpg?1696530772" alt="Celestia logo">
+    <div>
+      <h1 style="margin:0">Celestia (TIA)</h1>
+      <div style="color:#8b949e">Rank #98 &middot; ID: celestia</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Current Price</div><div class="value">$0.6851</div></div>
+    <div class="stat-card"><div class="label">Market Cap</div><div class="value">$673,004,350.00</div></div>
+    <div class="stat-card"><div class="label">24h High</div><div class="value">$0.76</div></div>
+    <div class="stat-card"><div class="label">24h Low</div><div class="value">$0.66</div></div>
+    <div class="stat-card"><div class="label">24h Change</div><div class="value positive">+1.16%</div></div>
+    <div class="stat-card"><div class="label">7d Change</div><div class="value positive">+45.64%</div></div>
+  </div>
+  <div class="chart-container">
+    <h2 style="margin-top:0">7-Day Price Chart (USD)</h2>
+    <canvas id="priceChart"></canvas>
+  </div>
+</main>
+<footer>
+  <div class="ad">Advertisement</div>
+</footer>
+<script>
+  const prices = [0.4859007627415756, 0.48865452479286786, 0.4865167178303706, 0.4801119968838035, 0.4851896431689078, 0.49809573349285335, 0.5134644431416352, 0.5104165977730563, 0.5086545492176194, 0.5435414106929879, 0.568583682921107, 0.5775611670322697, 0.5749455727698569, 0.5950221209409994, 0.6019079715311193, 0.5929386982497881, 0.6283803083157705, 0.6111950294195536, 0.5974994884073391, 0.6032092928995152, 0.6074563862795813, 0.6102788926461016, 0.6030095727874168, 0.5909288609304831, 0.5953531952062276, 0.5801801506706984, 0.582682147079557, 0.577083797713458, 0.5784225554790182, 0.5802540533534098, 0.5886017206845232, 0.5826972747554747, 0.5848264521272492, 0.5820333457272111, 0.5848801791174204, 0.574713157459032, 0.5744276092596579, 0.5775182595903302, 0.5804830067762329, 0.5785234103481588, 0.5807496703604524, 0.5849653869554502, 0.595302408446746, 0.5921318785506164, 0.5931771796694288, 0.6012668829496992, 0.5969796081205816, 0.5928817343558066, 0.602554761026417, 0.5956252902896189, 0.5948258892871817, 0.5840965749918942, 0.57919394518265, 0.5558723871584224, 0.5696583754604034, 0.5533440270126785, 0.55046675805493, 0.5519899484309722, 0.5497351246771536, 0.5471342603016375, 0.5347061547026312, 0.5377530786499687, 0.5297118978999318, 0.5106219495259493, 0.5219138467570573, 0.5718977313781876, 0.5944127089860861, 0.5977294372792054, 0.6159903892319638, 0.6207207067441419, 0.6133372003767329, 0.6059819323963479, 0.6070821286638047, 0.6010744554067504, 0.5916997275959396, 0.5986300147091895, 0.5881591031626567, 0.585492004712413, 0.5771265073988997, 0.574643245754816, 0.571235206382641, 0.5797430009099079, 0.5775862328955882, 0.5759160922532545, 0.5706006973947307, 0.5660938329244792, 0.5730533069509235, 0.5695865930956064, 0.5723418347999695, 0.5766687677492511, 0.5738854296156658, 0.579005486376622, 0.5532999527870295, 0.5567469298289744, 0.5577545706412159, 0.5520244760630769, 0.5471624830276388, 0.5440088307114442, 0.5558715992991256, 0.54516101610522, 0.5472056927466205, 0.5474674730850424, 0.5342783302004003, 0.5368836604496022, 0.5415328432992558, 0.5524270804260046, 0.5505392661127387, 0.5492373205816515, 0.5528488923918412, 0.5529591278272022, 0.5521922292940288, 0.5494943824415307, 0.5455116997548164, 0.5378720959841291, 0.528286335729232, 0.533032679417715, 0.5240485701515518, 0.5223587195652252, 0.5283214301063942, 0.5364583588325953, 0.5399517565919745, 0.5282100733003119, 0.534154005215456, 0.5325143683224299, 0.5359008220984985, 0.5693608883633845, 0.6016491953912353, 0.600309603046577, 0.5925346934186045, 0.586144540111193, 0.5800671660992576, 0.5768709409633225, 0.5859887326233083, 0.5919559166067536, 0.5899194405377709, 0.5913269244046275, 0.5848900081931696, 0.6010402966940424, 0.6022224787552516, 0.6065835322129164, 0.6231603168222856, 0.6568046652807289, 0.6652869334458525, 0.6848828802633613, 0.6837929685790028, 0.6854342090115513, 0.6954440677150541, 0.6990819417683576, 0.7048400973057225, 0.7100299317567179, 0.6992757496338943, 0.6842230615279634, 0.6908714095255838, 0.6777364933790748, 0.679228046671131, 0.6569076676010099, 0.6687115908462821, 0.6743282289875508, 0.6877860299631656, 0.6858664765706748, 0.6899223299661368, 0.7031671989804402, 0.731546683624538, 0.7499936285783261, 0.7425994905133705, 0.7358902167780954, 0.7270488827549608, 0.718661445993084];
+  const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167];
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, 'rgba(88,166,255,0.45)');
+  gradient.addColorStop(1, 'rgba(88,166,255,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Celestia 7d price (USD)',
+        data: prices,
+        borderColor: '#58a6ff',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: '#c9d1d9' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>
